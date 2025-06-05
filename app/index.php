@@ -1,8 +1,12 @@
 <?php
+
+
+ob_start(); 
 session_start();
 if (isset($_GET["CerrarSesion"])) {
     session_destroy();
 }
+
 
 require("models/persona.php");
 require("models/paciente.php");
@@ -64,3 +68,4 @@ $pagesWithSession = array(
 </body>
 
 </html>
+<?php ob_end_flush(); ?>

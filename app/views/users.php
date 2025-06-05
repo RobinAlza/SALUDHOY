@@ -6,7 +6,8 @@ if ($_SESSION["role"] == "P") {
     $persona = new Medico($_SESSION["id"]);
     $persona->consultarPorId();
 } else {
-    header("Location: ?pid=" . base64_encode("views/login.php"));
+	header("Location: ?pid=" . base64_encode("views/login.php"));
+	exit();
 }
 ?>
 

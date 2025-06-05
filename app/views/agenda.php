@@ -3,7 +3,9 @@ if ($_SESSION["role"] == "M") {
     $persona = new Medico($_SESSION["id"]);
     $persona->consultarPorId();
 } else {
-    header("Location: ?pid=" . base64_encode("views/sinPermisos.php"));}
+	header("Location: ?pid=" . base64_encode("views/sinPermisos.php"));
+	exit();
+}
 ?>
 <body id="body-pd">
     <?php

@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . '/../config/conexion.php');
-require_once(__DIR__ . '/../dao/MedicoDAO.php');
+require_once(__DIR__ . '/../dao/medicoDAO.php');
 
 class Medico extends Persona
 {

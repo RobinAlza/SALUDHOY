@@ -13,10 +13,9 @@ if (isset($_POST['sendButton'])) {
         if ($persona->autenticar()) {
             $_SESSION["id"] = $persona->getNumeroIdentificacion();
             $_SESSION["role"] = "M";
-            header("Location: ?pid=" . base64_encode("wievs/home.php"));
+            header("Location: ?pid=" . base64_encode("views/home.php"));
             exit();
         } else {
-            echo "no autenticado";
             $error = true;
         }
     }

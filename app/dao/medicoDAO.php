@@ -11,19 +11,18 @@ class MedicoDAO
     private $clave;
     private $idEspecializacion;
 
-    public function __construct(
-        $numeroIdentificacion = 0,
-        $idTipoIdentificacion = 0,
-        $nombre = "",
-        $apellido = "",
-        $direccion = "",
-        $idMunicipioResidencia = 0,
-        $fechaNacimiento = "",
-        $clave = "",
-        $idEspecializacion = 0
-    ) {
+	public function __construct($numeroIdentificacion = 0, $idTipoIdentificacion = 0, $nombre = "", $apellido = "", $direccion = "", $idMunicipioResidencia = 0, $fechaNacimiento = "", $clave = "", $idEspecializacion = 0)
+	{
+        $this->numeroIdentificacion = $numeroIdentificacion;
+        $this->idTipoIdentificacion = $idTipoIdentificacion;
+        $this->nombre = $nombre;
+        $this->apellido = $apellido;
+        $this->direccion = $direccion;
+        $this->idMunicipioResidencia = $idMunicipioResidencia;
+        $this->fechaNacimiento = $fechaNacimiento;
+        $this->clave = $clave;
         $this->idEspecializacion = $idEspecializacion;
-    }
+	}
     public function autenticar()
     {
         return "SELECT p.numero_identificacion, p.nombre, p.clave
