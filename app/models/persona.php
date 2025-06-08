@@ -12,6 +12,7 @@ class Persona
     protected $fechaNacimiento;
     protected $clave;
 
+
     public function getNumeroIdentificacion()
     {
         return $this->numeroIdentificacion;
@@ -85,16 +86,15 @@ class Persona
     }
 
     public function __construct(
-        $numeroIdentificacion = 0, 
-        $idTipoIdentificacion = 0, 
-        $nombre = "", 
-        $apellido = "", 
-        $direccion = "", 
-        $idMunicipioResidencia = 0, 
-        $fechaNacimiento = "", 
-        $clave = ""
-    )
-    {
+        $numeroIdentificacion = 0,
+        $idTipoIdentificacion = 0,
+        $nombre = "",
+        $apellido = "",
+        $direccion = "",
+        $idMunicipioResidencia = 0,
+        $fechaNacimiento = "",
+        $clave = "",
+    ) {
         $this->numeroIdentificacion = $numeroIdentificacion;
         $this->idTipoIdentificacion = $idTipoIdentificacion;
         $this->nombre = $nombre;
@@ -105,5 +105,10 @@ class Persona
         $this->clave = $clave;
     }
 
+        public function nombreCompleto()
+    {
+        return $this->getNombre() . " " . $this->getApellido() . "   ";
+    }
 }
+
 ?>

@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . '/../config/conexion.php');
-require_once(__DIR__ . '/../dao/EspecializacionDAO.php');
+require_once(__DIR__ . '/../dao/especializacionDAO.php');
 
 class Especializacion
 {
@@ -35,6 +35,7 @@ class Especializacion
     {
         $conexion = new Conexion();
         $conexion->abrirConexion();
+
         $dao = new EspecializacionDAO($this->idEspecializacion);
         $conexion->ejecutarConsulta($dao->consultarPorId());
 
@@ -45,9 +46,11 @@ class Especializacion
 
         $registro = $conexion->siguienteRegistro();
         $this->especializacion = $registro[0];
+
         $conexion->cerrarConexion();
         return true;
     }
+
 
     public function consultarTodos()
     {
@@ -65,4 +68,3 @@ class Especializacion
         return $lista;
     }
 }
-?>

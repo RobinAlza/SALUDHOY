@@ -19,7 +19,7 @@ class TipoPacienteDAO
 
     public function consultarTodos()
     {
-        return "SELECT id_tipo_paciente, nombre_tipo 
+        return "SELECT id_tipo_paciente, nombre_tipo
                 FROM tipo_paciente";
     }
 }

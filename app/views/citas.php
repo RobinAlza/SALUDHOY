@@ -4,6 +4,7 @@ if ($_SESSION["role"] == "P") {
     $persona->consultarPorId();
 }else {
     header("Location: ?pid=" . base64_encode("views/sinPermisos.php"));
+    exit;
 }
 ?>
 
