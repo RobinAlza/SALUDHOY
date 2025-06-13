@@ -10,9 +10,9 @@ $route = base64_decode($_GET['pid']);
         <button class="btn btn-secondary dropdown-toggle d-flex align-items-center justify-content-center" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
             <div class="header_img d-flex align-items-center">
                 <!--<img src="" alt="User Image" id="userImage" class="rounded-circle me-2" style="width: 40px; height: 40px;">-->
-                            <p class="user-name m-0 ms-2 text-center"><?= $persona->getNombre() . " " . $persona->getApellido() . " " ?></p>
-
             </div>
+            <p class="user-name m-0 ms-2 text-center"><?= $persona->nombreCompleto(); ?></p>
+    
         </button>
         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
             <li><a class="dropdown-item d-flex align-items-center justify-content-center" href="">Perfil</a></li>

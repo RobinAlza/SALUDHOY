@@ -86,6 +86,7 @@ function generarCalendario($mes, $año) {
         }
     }
 ?>
+
 <body id="body-pd">
     <?php
     include("components/menu.php");

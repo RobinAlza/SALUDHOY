@@ -9,13 +9,13 @@ class EspecializacionDAO
         $this->idEspecializacion = $idEspecializacion;
         $this->especializacion = $especializacion;
     }
-
     public function consultarPorId()
     {
-        return "SELECT especializacion
-                FROM especializacion
-                WHERE id_especializacion = $this->idEspecializacion";
+        return "SELECT especializacion 
+            FROM especializacion 
+            WHERE id_especializacion = $this->idEspecializacion";
     }
+
 
     public function consultarTodos()
     {
@@ -23,4 +23,3 @@ class EspecializacionDAO
                 FROM especializacion";
     }
 }
-?>

@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . '/../config/conexion.php');
-require_once(__DIR__ . '/../dao/MunicipioResidenciaDAO.php');
+require_once(__DIR__ . '/../dao/municipioResidenciaDAO.php');
 
 class MunicipioResidencia
 {
