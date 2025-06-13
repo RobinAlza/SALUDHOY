@@ -13,7 +13,7 @@ if (isset($_POST['sendButton'])) {
         if ($persona->autenticar()) {
             $_SESSION["id"] = $persona->getNumeroIdentificacion();
             $_SESSION["role"] = "M";
-            header("Location: ?pid=" . base64_encode("wievs/home.php"));
+            header("Location: ?pid=" . base64_encode("views/home.php"));
             exit();
         } else {
             echo "no autenticado";
@@ -39,7 +39,7 @@ if (isset($_POST['sendButton'])) {
                                 </div>
                             <?php endif; ?>
                             <div class="mb-3">
-                                <label class="mb-3 text-muted" for="name">Correo Electrónico</label>
+                                <label class="mb-3 text-muted" for="name">Nombre</label>
                                 <input name="name" type="name" class="form-control" required autofocus>
                             </div>
                             <label class="mb-3 text-muted" for="passwordInput">Contraseña</label>
