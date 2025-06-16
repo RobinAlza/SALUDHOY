@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . '/../config/conexion.php');
-require_once(__DIR__ . '/../dao/EstadoCitaDAO.php');
+require_once(__DIR__ . '/../dao/estadoCitaDAO.php');
 
 class EstadoCita
 {

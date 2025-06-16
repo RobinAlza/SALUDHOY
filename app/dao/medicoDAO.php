@@ -57,6 +57,12 @@ JOIN especializacion e ON m.id_especializacion = e.id_especializacion
                 FROM persona
                 WHERE numero_identificacion = $this->numeroIdentificacion";
     }
+        public function consultarPorMedico()
+    {
+        return "SELECT p.id_tipo_identificacion, p.nombre, p.apellido, p.direccion, p.id_municipio_residencia, p.fecha_nacimiento
+                FROM persona p
+                JOIN medico m ON p.numero_identificacion = m.id_numero_identificacion;";
+    }
 
 
 

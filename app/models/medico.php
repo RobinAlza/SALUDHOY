@@ -102,6 +102,29 @@ class Medico extends Persona
         return true;
     }
 
+    public function consultarPorMedico()
+    {
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+        $dao = new MedicoDAO();
+        $conexion->ejecutarConsulta($dao->consultarPorMedico());
+
+        if ($conexion->numeroFilas() == 0) {
+            $conexion->cerrarConexion();
+            return false;
+        }
+
+        $registro = $conexion->siguienteRegistro();
+        $this->idTipoIdentificacion = $registro[0];
+        $this->nombre = $registro[1];
+        $this->apellido = $registro[2];
+        $this->direccion = $registro[3];
+        $this->idMunicipioResidencia = $registro[4];
+        $this->fechaNacimiento = $registro[5];
+        $conexion->cerrarConexion();
+        return true;
+    }
+
     public function consultarTodos()
     {
         $conexion = new Conexion();
@@ -215,7 +238,7 @@ class Medico extends Persona
         return $this->numeroIdentificacion;
     }
 
-        public function actualizar()
+    public function actualizar()
     {
         $conexion = new Conexion();
         $conexion->abrirConexion();
@@ -237,4 +260,5 @@ class Medico extends Persona
 
         return $this->numeroIdentificacion;
     }
+
 }

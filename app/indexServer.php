@@ -7,6 +7,11 @@ require("models/municipioResidencia.php");
 require("models/especializacion.php");
 require("models/tipoPaciente.php");
 require("models/telefonoPersona.php");
+require("models/citaMedica.php");
+require("models/consultorio.php");
+require("models/estadoCita.php");
+require("models/tipoCita.php");
+
 
 
 $pid = base64_decode($_GET["pid"]);

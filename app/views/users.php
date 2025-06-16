@@ -10,7 +10,7 @@ if ($_SESSION["role"] == "P") {
     exit;
 }
 
-//notificacion 
+//notificacion
 $toastVisible = false;
 $toastMensaje = "";
 
