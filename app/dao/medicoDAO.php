@@ -10,6 +10,7 @@ class MedicoDAO
     private $fechaNacimiento;
     private $clave;
     private $idEspecializacion;
+    private $id_medico;
 
     public function __construct($numeroIdentificacion = 0, 
     $idTipoIdentificacion = 0, 
@@ -18,7 +19,8 @@ class MedicoDAO
     $idMunicipioResidencia = 0, 
     $fechaNacimiento = "", 
     $clave = "", 
-    $idEspecializacion = 0)
+    $idEspecializacion = 0, 
+    $id_medico = 0)
     {
         $this->numeroIdentificacion = $numeroIdentificacion;
         $this->idTipoIdentificacion = $idTipoIdentificacion;
@@ -29,6 +31,7 @@ class MedicoDAO
         $this->fechaNacimiento = $fechaNacimiento;
         $this->clave = $clave;
         $this->idEspecializacion = $idEspecializacion;
+        $this->id_medico = $id_medico;
     }
     public function autenticar()
     {
@@ -42,19 +45,39 @@ class MedicoDAO
     public function consultar()
     {
         return "SELECT 
-    p.numero_identificacion,
-    p.id_tipo_identificacion,
-    p.nombre,
-    p.apellido,
-    p.direccion,
-    p.id_municipio_residencia,
-    p.fecha_nacimiento,
-    p.clave,
-    e.id_especializacion
-FROM persona p
-JOIN medico m ON p.numero_identificacion = m.id_numero_identificacion
-JOIN especializacion e ON m.id_especializacion = e.id_especializacion
-                WHERE numero_identificacion = $this->numeroIdentificacion";
+                p.numero_identificacion,
+                p.id_tipo_identificacion,
+                p.nombre,
+                p.apellido,
+                p.direccion,
+                p.id_municipio_residencia,
+                p.fecha_nacimiento,
+                p.clave,
+                e.id_especializacion,
+                m.id_medico
+            FROM persona p
+            JOIN medico m ON p.numero_identificacion = m.id_numero_identificacion
+            JOIN especializacion e ON m.id_especializacion = e.id_especializacion
+            WHERE numero_identificacion = $this->numeroIdentificacion";
+    }
+    
+    public function consultarPorNombre()
+    {
+        return "SELECT 
+                p.numero_identificacion,
+                p.id_tipo_identificacion,
+                p.nombre,
+                p.apellido,
+                p.direccion,
+                p.id_municipio_residencia,
+                p.fecha_nacimiento,
+                p.clave,
+                e.id_especializacion,
+                m.id_medico
+            FROM persona p
+            JOIN medico m ON p.numero_identificacion = m.id_numero_identificacion
+            JOIN especializacion e ON m.id_especializacion = e.id_especializacion
+            WHERE nombre = $this->nombre";
     }
 
 
@@ -85,5 +108,18 @@ JOIN especializacion e ON m.id_especializacion = e.id_especializacion
     {
         return "SELECT id_persona, id_especializacion
                 FROM medico";
+    }
+
+    public function agenda($fecha, $id_medico)
+    {
+        return "SELECT cm.codigo_cita, c.lugar_cita, cm.id_paciente, per.nombre, per.apellido, tp.nombre_tipo
+                FROM cita_medica  AS cm
+                    JOIN medico AS m ON (cm.id_medico = m.id_medico)
+                    JOIN consultorio AS c ON (cm.id_consultorio = c.id_consultorio)
+                    JOIN paciente AS p ON (cm.id_paciente = p.id_paciente)
+                    JOIN tipo_paciente AS tp ON (p.id_tipo_paciente = tp.id_tipo_paciente)
+                    JOIN persona AS per ON (p.id_paciente = per.numero_identificacion)
+                WHERE m.id_medico = $id_medico AND DATE(cm.fecha_cita) = $fecha
+                ORDER BY cm.fecha_cita";
     }
 }

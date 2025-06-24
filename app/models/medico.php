@@ -1,6 +1,7 @@
 <?php
 require_once(__DIR__ . '/../config/conexion.php');
 require_once(__DIR__ . '/../dao/medicoDAO.php');
+require_once(__DIR__ . '/../models/persona.php');
 
 class Medico extends Persona
 {
@@ -13,11 +14,22 @@ class Medico extends Persona
     {
         $this->idEspecializacion = $idEspecializacion;
     }
+    private $id_medico;
+    public function getIdMedico()
+    {
+        return $this->id_medico;
+    }
+    public function setIdMedico($id_medico)
+    {
+        $this->id_medico = $id_medico;
+    }
 
-    public function __construct($numeroIdentificacion = 0, $idTipoIdentificacion = 0, $nombre = "", $apellido = "", $direccion = "", $idMunicipioResidencia = 0, $fechaNacimiento = "", $clave = "", $idEspecializacion = 0)
+
+    public function __construct($numeroIdentificacion = 0, $idTipoIdentificacion = 0, $nombre = "", $apellido = "", $direccion = "", $idMunicipioResidencia = 0, $fechaNacimiento = "", $clave = "", $idEspecializacion = 0, $id_medico = 0)
     {
         parent::__construct($numeroIdentificacion, $idTipoIdentificacion, $nombre, $apellido, $direccion, $idMunicipioResidencia, $fechaNacimiento, $clave);
         $this->idEspecializacion = $idEspecializacion;
+        $this->id_medico = $id_medico;
     }
 
 
@@ -72,6 +84,7 @@ class Medico extends Persona
             $this->fechaNacimiento = $registro[6];
             $this->clave = $registro[7];
             $this->idEspecializacion = $especializacion;
+            $this->id_medico = $registro[9];
         }
 
         $conexion->cerrarConexion();
@@ -120,6 +133,7 @@ class Medico extends Persona
                 $registro[5],
                 $registro[6],
                 $registro[7],
+
             );
             array_push($lista, $obj);
         }
@@ -183,7 +197,8 @@ class Medico extends Persona
                 $municipio,
                 $registro[6], // fecha_nacimiento
                 $registro[7], // clave
-                $especializacion
+                $especializacion,
+                $registro[9] // id_medico
             );
 
             array_push($medicos, $medico);
