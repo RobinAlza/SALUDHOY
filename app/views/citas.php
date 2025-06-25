@@ -1,16 +1,9 @@
 <?php
-
-//cambiar los roles solo paciente y admin
-if ($_SESSION["role"] == "P") {
-    $persona = new Paciente($_SESSION["id"]);
-    $persona->consultarPorId();
-} else if ($_SESSION["role"] == "M") {
-    $persona = new Medico($_SESSION["id"]);
-    $persona->consultarPorId();
-} else {
+if (!isset($_SESSION['id'])) {
     header("Location: ?pid=" . base64_encode("views/login.php"));
-    exit;
+    exit();
 }
+
 
 //notificacion 
 $toastVisible = false;
@@ -19,9 +12,6 @@ $toastMensaje = "";
 ?>
 
 <body id="body-pd">
-    <?php
-    include("components/menu.php");
-    ?>
     <!--Container Main-->
     <div class="container">
         <h4>Citas Medicas</h4>
@@ -67,7 +57,6 @@ $toastMensaje = "";
     <?php endif; ?>
 
 
-    <script src="js/home.js"></script>
     <script>
         $(document).ready(function() {
             const pacienteId = '<?= $_SESSION["id"] ?>';

@@ -100,6 +100,24 @@ class Paciente extends Persona
         return true;
     }
 
+
+    public function consultarPorIdentificacion()
+    {
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+        $dao = new PacienteDAO($this->numeroIdentificacion);
+        $conexion->ejecutarConsulta($dao->consultarPorIdentificacion());
+
+        if ($conexion->numeroFilas() == 0) {
+            $conexion->cerrarConexion();
+            return false;
+        }
+
+        $registro = $conexion->siguienteRegistro();
+        $this->numeroIdentificacion = $registro[0];
+        $conexion->cerrarConexion();
+        return true;
+    }
     public function consultarTodos()
     {
         $conexion = new Conexion();

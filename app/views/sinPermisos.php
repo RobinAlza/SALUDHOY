@@ -1,20 +1,10 @@
 <?php
-if ($_SESSION["role"] == "P") {
-    $persona = new Paciente($_SESSION["id"]);
-    $persona->consultarPorId();
-} else if ($_SESSION["role"] == "M") {
-    $persona = new Medico($_SESSION["id"]);
-    $persona->consultarPorId();
-} else {
+if (!isset($_SESSION['id'])) {
     header("Location: ?pid=" . base64_encode("views/login.php"));
-    exit;
+    exit();
 }
 ?>
-
 <body id="body-pd">
-    <?php
-    include("components/menu.php");
-    ?>
     <!--Container Main-->
 
     <div class="container d-flex justify-content-center align-items-center vh-100">

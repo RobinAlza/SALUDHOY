@@ -209,8 +209,6 @@ if ($tipoAgregacion == 'medicos' || $tipoAgregacion == 'pacientes') {
                     <button type="submit" class="btn btn-success" name="upDate-<?= $tipoAgregacion ?>">Actualizar</button>
                 </div>
             </div>
-
-
         </form>
     </div>
 </div>

@@ -1,11 +1,22 @@
 <?php
+session_start();
+
+//input id_paciente
+$paciente = new Paciente($_SESSION["id"]);
+$idPasiente = $paciente->consultarPorIdentificacion();
+
 //Especialidad
-$tipo = new TipoCita();
+$tipo = new Especializacion();
 $tipos = $tipo->consultarTodos();
 
 //select medico
-//$medico = new Medico();
-//$medicos = $medico->consultarTodos();
+$medico = new Medico();
+$medicos = $medico->listarMedicos();
+
+//select consultorio
+$con = new Consultorio();
+$cons = $con->consultarTodos();
+
 
 ?>
 
@@ -14,8 +25,10 @@ $tipos = $tipo->consultarTodos();
     <div class="card-body">
         <h5 class="card-title">Agendar Cita</h5>
 
-        <form id="add-cita" method="post" action="?pid=<?= base64_encode("views/citas/agendarCita.php") ?>" enctype="multipart/form-data">
+        <form id="add-Cita" method="post" enctype="multipart/form-data">
             <div class="row">
+                <input type="hidden" name="id_paciente" id="id_paciente" value="<?= $paciente->getNumeroIdentificacion() ?>">
+
                 <!-- especilidad de cita -->
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -23,29 +36,8 @@ $tipos = $tipo->consultarTodos();
                         <select class="form-select" name="tipoCita" id="tipoCita" required>
                             <option value="-1">Seleccione...</option>
                             <?php foreach ($tipos as $tipoActual) { ?>
-                                <option value="<?= $tipoActual->getIdTipoCita(); ?>"> 
-                                    <?= $tipoActual->getEspecialidad(); ?>
-                                </option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Fecha de la cita -->
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="fecha_cita" class="form-label">* Fecha de Cita</label>
-                        <input type="date" class="form-control" name="fecha_cita" id="fecha_cita" required>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="Hora" class="form-label">* Hora Cita</label>
-                        <select class="form-select" name="Hora" id="Hora" required>
-                            <option value="-1">Seleccione...</option>
-                              <?php foreach ($tipos as $tipoActual) { ?>
-                                <option value="<?= $tipoActual->getIdTipoCita(); ?>"> 
-                                    <?= $tipoActual->getEspecialidad(); ?>
+                                <option value="<?= $tipoActual->getIdEspecializacion(); ?>">
+                                    <?= $tipoActual->getEspecializacion(); ?>
                                 </option>
                             <?php } ?>
                         </select>
@@ -57,14 +49,44 @@ $tipos = $tipo->consultarTodos();
                         <label for="especialista" class="form-label">* Especialista</label>
                         <select class="form-select" name="especialista" id="especialista" required>
                             <option value="-1">Seleccione...</option>
-                              <?php foreach ($tipos as $tipoActual) { ?>
-                                <option value="<?= $tipoActual->getIdTipoCita(); ?>"> 
-                                    <?= $tipoActual->getEspecialidad(); ?>
+                            <?php foreach ($medicos as $tipoActual) { ?>
+                                <option value="<?= $tipoActual->getNumeroIdentificacion(); ?>">
+                                    <?= $tipoActual->getNombre(); ?>
                                 </option>
                             <?php } ?>
                         </select>
                     </div>
                 </div>
+                <!-- Fecha de la cita -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="fecha_cita" class="form-label">* Fecha de Cita</label>
+                        <input type="date" class="form-control" name="fecha_cita" id="fecha_cita" required>
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="hora_cita" class="form-label">* Hora de Cita</label>
+                        <input type="time" class="form-control" name="hora_cita" id="hora_cita" required>
+                    </div>
+
+                </div>
+                <!-- Consultorio -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="consultorio" class="form-label">* Consultorio</label>
+                        <select class="form-select" name="consultorio" id="consultorio" required>
+                            <option value="-1">Seleccione...</option>
+                            <?php foreach ($cons as $tipoActual) { ?>
+                                <option value="<?= $tipoActual->getIdConsultorio(); ?>">
+                                    <?= $tipoActual->getLugarCita(); ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Botones -->
@@ -80,6 +102,32 @@ $tipos = $tipo->consultarTodos();
 </div>
 
 <script>
+    $(document).ready(function() {
+        $('#add-Cita').on('submit', function(e) {
+            e.preventDefault();
+
+            var formData = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: 'ajax/agregarCita.php',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        alert('Cita registrada correctamente');
+                        $('#add-Cita')[0].reset();
+                    } else {
+                        alert('Error al registrar la cita: ' + (response.message || ''));
+                    }
+                },
+                error: function() {
+                    alert('Error en el servidor o en la conexión');
+                }
+            });
+        });
+    });
+
     $(document).ready(function() {
 
         // Eliminar una propiedad agregada
@@ -102,5 +150,39 @@ $tipos = $tipo->consultarTodos();
                 }
             });
         });
+    });
+    document.getElementById('tipoCita').addEventListener('change', function() {
+        console.log("Cambio detectado en tipoCita"); 
+
+        const especialidadId = this.value;
+        const pacienteId = document.getElementById('id_paciente').value;
+
+        fetch('ajax/restrincionCita.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id_especialidad=${encodeURIComponent(especialidadId)}&id_paciente=${encodeURIComponent(pacienteId)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.permitido === false) {
+                    // Si no puede agendar, mostrar alerta y resetear select
+                    alert("⚠️ No puedes agendar más de 2 citas para esta especialidad este mes.");
+                    document.getElementById('tipoCita').value = "-1";
+                    document.getElementById('especialista').innerHTML = '<option value="-1">Seleccione...</option>';
+                } else {
+                    // Cargar médicos disponibles
+                    const selectMedico = document.getElementById('especialista');
+                    selectMedico.innerHTML = '<option value="-1">Seleccione...</option>';
+
+                    data.medicos.forEach(medico => {
+                        const option = document.createElement('option');
+                        option.value = medico.numero_identificacion;
+                        option.textContent = medico.nombre + ' ' + medico.apellido;
+                        selectMedico.appendChild(option);
+                    });
+                }
+            });
     });
 </script>

@@ -9,7 +9,6 @@ class CitaMedica
     private $idConsultorio;
     private $idMedico;
     private $idPaciente;
-    private $idEstadoCita;
     private $idTipoCita;
 
 
@@ -57,16 +56,7 @@ class CitaMedica
     {
         $this->idPaciente = $idPaciente;
     }
-
-    public function getIdEstadoCita()
-    {
-        return $this->idEstadoCita;
-    }
-    public function setIdEstadoCita($idEstadoCita)
-    {
-        $this->idEstadoCita = $idEstadoCita;
-    }
-        public function getIdTipoCita()
+    public function getIdTipoCita()
     {
         return $this->idTipoCita;
     }
@@ -75,16 +65,14 @@ class CitaMedica
         $this->idTipoCita = $idTipoCita;
     }
 
-    public function __construct($codigoCita = 0, $fechaCita = "", $idConsultorio = 0, $idMedico = 0, $idPaciente = 0, $idEstadoCita = 0, $idTipoCita = 0)
+    public function __construct($codigoCita = 0, $fechaCita = "", $idConsultorio = 0, $idMedico = 0, $idPaciente = 0, $idTipoCita = 0)
     {
         $this->codigoCita = $codigoCita;
         $this->fechaCita = $fechaCita;
         $this->idConsultorio = $idConsultorio;
         $this->idMedico = $idMedico;
         $this->idPaciente = $idPaciente;
-        $this->idEstadoCita = $idEstadoCita;
         $this->idTipoCita = $idTipoCita;
-
     }
 
     public function consultarPorId()
@@ -104,10 +92,11 @@ class CitaMedica
         $this->idConsultorio = $registro[1];
         $this->idMedico = $registro[2];
         $this->idPaciente = $registro[3];
-        $this->idEstadoCita = $registro[4];
         $conexion->cerrarConexion();
         return true;
     }
+
+    
     public function consultaPendientes($numeroIdentificacion)
     {
         $conexion = new Conexion();
@@ -119,7 +108,6 @@ class CitaMedica
 
         $consultorios = [];
         $medicos = [];
-        $estados = [];
         $citas = [];
         $especialidades = [];
 
@@ -142,27 +130,120 @@ class CitaMedica
                 $medicos[$registro[3]] = $medico;
             }
 
-
-            // Estado
-            $estado = $estados[$registro[4]] ?? new EstadoCita($registro[4]);
-            if (!isset($estados[$registro[4]])) {
-                $estado->consultarPorId();
-                $estados[$registro[4]] = $estado;
-            }
-            
             // especialidad
-            $especialidad = $especialidades[$registro[5]] ?? new TipoCita($registro[5]);
-            if (!isset($especialidades[$registro[5]])) {
+            $especialidad = $especialidades[$registro[4]] ?? new Especializacion($registro[4]);
+            if (!isset($especialidades[$registro[4]])) {
                 $especialidad->consultarPorId();
-                $especialidades[$registro[5]] = $especialidad;
+                $especialidades[$registro[4]] = $especialidad;
             }
-
             // Crear la cita
-            $cita = new CitaMedica($registro[0], $registro[1], $consultorio, $medico, null, $estado,$especialidad );
+            $cita = new CitaMedica($registro[0], $registro[1], $consultorio, $medico, null, $especialidad);
             array_push($citas, $cita);
         }
 
         $conexion->cerrarConexion();
         return $citas;
+    }
+
+    public function consultaHistorico($numeroIdentificacion)
+    {
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+
+        // Le pasamos el número de cédula al DAO
+        $dao = new CitaMedicaDAO(null, null, null, null, $numeroIdentificacion);
+        $conexion->ejecutarConsulta($dao->consultaHistorico());
+
+        $consultorios = [];
+        $medicos = [];
+        $citas = [];
+        $especialidades = [];
+
+
+
+        while ($registro = $conexion->siguienteRegistro()) {
+
+            // Consultorio
+            $consultorio = $consultorios[$registro[2]] ?? new Consultorio($registro[2]);
+            if (!isset($consultorios[$registro[2]])) {
+                $consultorio->consultarPorId();
+                $consultorios[$registro[2]] = $consultorio;
+            }
+
+            // Médico
+            $medico = $medicos[$registro[3]] ?? new Medico($registro[3]);
+            if (!isset($medicos[$registro[3]])) {
+                $medico->setNombre($registro[5]);    // nombre
+                $medico->setApellido($registro[6]);  // apellido
+                $medicos[$registro[3]] = $medico;
+            }
+
+            // especialidad
+            $especialidad = $especialidades[$registro[4]] ?? new Especializacion($registro[4]);
+            if (!isset($especialidades[$registro[4]])) {
+                $especialidad->consultarPorId();
+                $especialidades[$registro[4]] = $especialidad;
+            }
+
+            // Crear la cita
+            $cita = new CitaMedica($registro[0], $registro[1], $consultorio, $medico, null, $especialidad);
+            array_push($citas, $cita);
+        }
+
+        $conexion->cerrarConexion();
+        return $citas;
+    }
+
+    public function guardarCita()
+    {
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+
+        $citaDAO = new CitaMedicaDAO(
+            null,
+            $this->fechaCita,
+            $this->idConsultorio,
+            $this->idMedico,
+            $this->idPaciente,
+            $this->idTipoCita
+        );
+
+        $idCita = $conexion->ejecutarConsultaConId($citaDAO->guardarCita());
+        $conexion->cerrarConexion();
+
+        return $idCita; // Aquí devuelves el ID
+    }
+
+    public function reagendadaCita()
+    {
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+
+        $pacienteDAO = new CitaMedicaDAO(
+            $this->codigoCita,
+            $this->fechaCita,
+            null,
+            $this->idMedico,
+        );
+        $conexion->ejecutarConsulta($pacienteDAO->reagendadaCita());
+        $conexion->cerrarConexion();
+
+        return true;
+    }
+
+    public function restrincionCita($idPaciente, $idEspecialidad)
+    {
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+        
+        $citaDAO = new CitaMedicaDAO(null,null,null,null,$idPaciente,$idEspecialidad);
+
+
+        $resultado = $conexion->ejecutarConsulta($citaDAO->restrincionCita());
+        $fila = $resultado->fetch_assoc();
+
+        $conexion->cerrarConexion();
+
+        return intval($fila['total_citas']);
     }
 }

@@ -11,6 +11,9 @@ require("models/citaMedica.php");
 require("models/consultorio.php");
 require("models/estadoCita.php");
 require("models/tipoCita.php");
+require("models/historialCita.php");
+require("models/administrador.php");
+
 
 
 

@@ -55,6 +55,14 @@ JOIN tipo_paciente t ON e.id_tipo_paciente  = t.id_tipo_paciente
                     WHERE numero_identificacion = $this->numeroIdentificacion";
     }
 
+
+    public function consultarPorIdentificacion()
+    {
+        return "SELECT e.id_paciente
+                    FROM persona p
+                    JOIN paciente e ON p.numero_identificacion = e.id_numero_identificacion
+                    WHERE numero_identificacion = $this->numeroIdentificacion";
+    }
     public function consultarTodos()
     {
         return "SELECT numero_identificacion, id_tipo_identificacion, nombre, apellido, direccion, id_municipio_residencia, fecha_nacimiento, id_tipo_paciente, clave

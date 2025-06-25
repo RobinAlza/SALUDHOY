@@ -1,3 +1,4 @@
+.
 <?php
 class MedicoDAO
 {
@@ -57,14 +58,20 @@ JOIN especializacion e ON m.id_especializacion = e.id_especializacion
                 FROM persona
                 WHERE numero_identificacion = $this->numeroIdentificacion";
     }
-        public function consultarPorMedico()
+    public function listarMedicos()
     {
-        return "SELECT p.id_tipo_identificacion, p.nombre, p.apellido, p.direccion, p.id_municipio_residencia, p.fecha_nacimiento
+        return "SELECT m.id_medico, p.id_tipo_identificacion, p.nombre, p.apellido, p.direccion, p.id_municipio_residencia, p.fecha_nacimiento, m.id_especializacion
                 FROM persona p
                 JOIN medico m ON p.numero_identificacion = m.id_numero_identificacion;";
     }
 
-
+    public function listarPorEspecialidad()
+    {
+        return "SELECT m.id_medico, p.nombre, p.apellido
+                FROM persona p
+                JOIN medico m ON p.numero_identificacion = m.id_numero_identificacion
+                WHERE m.id_especializacion = $this->idEspecializacion";
+    }
 
     public function actualizar()
     {
