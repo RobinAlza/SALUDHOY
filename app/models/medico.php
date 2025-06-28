@@ -7,6 +7,8 @@ require_once(__DIR__ . '/../models/persona.php');
 class Medico extends Persona
 {
     private $idEspecializacion;
+    private $id_medico;
+
     public function getIdEspecializacion()
     {
         return $this->idEspecializacion;
@@ -15,7 +17,6 @@ class Medico extends Persona
     {
         $this->idEspecializacion = $idEspecializacion;
     }
-    private $id_medico;
     public function getIdMedico()
     {
         return $this->id_medico;
@@ -47,6 +48,7 @@ class Medico extends Persona
         }
         $registro = $conexion->siguienteRegistro();
         $this->numeroIdentificacion = $registro[0];
+        $this->consultar();
         $conexion->cerrarConexion();
         return true;
     }
@@ -87,8 +89,22 @@ class Medico extends Persona
             $this->idEspecializacion = $especializacion;
             $this->id_medico = $registro[9];
         }
-
         $conexion->cerrarConexion();
+
+        $medicoDAO->__construct(
+            $this->numeroIdentificacion,
+            $this->idTipoIdentificacion->getIdTipoIdentificacion(),
+            $this->nombre,
+            $this->apellido,
+            $this->direccion,
+            $this->idMunicipioResidencia->getIdMunicipioResidencia(),
+            $this->fechaNacimiento,
+            $this->clave,
+            $this->idEspecializacion->getIdEspecializacion(),
+            $this->id_medico
+        );
+
+
     }
 
 
@@ -112,6 +128,7 @@ class Medico extends Persona
         $this->idMunicipioResidencia = $registro[4];
         $this->fechaNacimiento = $registro[5];
         $this->clave = $registro[6];
+        $this->id_medico= $registro[7];
         $conexion->cerrarConexion();
         return true;
     }
@@ -301,4 +318,24 @@ class Medico extends Persona
 
         return $this->numeroIdentificacion;
     }
+    //funcion para velificar la fecha minima posible de egendacioncion de citas 
+    public function fechaMin(){ 
+        $feachaMin=0;
+        $conexion=new Conexion();
+        $conexion->abrirConexion();
+        $medicoDAO=new MedicoDAO();
+        $conexion->ejecutarConsulta($medicoDAO->fechaMinima());
+        $registro=$conexion->siguienteRegistro();
+        if($registro){
+            $feachaMin=$registro[0];
+        }else{
+            $feachaMin=date('Y')+1;
+        }
+        $conexion->cerrarConexion();
+
+        return $feachaMin;
+
+    }
+
 }
+

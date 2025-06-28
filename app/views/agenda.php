@@ -2,15 +2,19 @@
 
 if ($_SESSION["role"] == "M") {
     $persona = new Medico($_SESSION["id"]);
-    $persona->consultarPorId();
+    $persona->consultar();
+    echo $persona->getIdMedico();
 } else {
     header("Location: ?pid=" . base64_encode("views/sinPermisos.php"));
     exit();
 }
+
 ?>
 
 <body id="body-pd">
     <?php include("components/menu.php"); ?>
+
+
 
     <div class="container">
         <div class="row">

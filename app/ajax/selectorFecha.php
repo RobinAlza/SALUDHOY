@@ -8,12 +8,16 @@ if ($_SESSION["role"] !== "M") {
     exit;
 }
 
-// Creamos el objeto Medico y obtenemos año/mes actuales
+// Creamos el objeto Medico y obtenemos año/mes actuales y año minimo
 $persona = new Medico($_SESSION["id"]);
 $persona->consultarPorId();
 
+$fechaMin = $persona->fechaMin(); 
 $year  = date('Y');
 $month = date('m');
+
+
+
 ?>
 <div class="selectorFecha p-3">
     <h4>Seleccione la fecha para ver las citas agendadas en el mes</h4>
@@ -24,7 +28,7 @@ $month = date('m');
             id="anioInput"
             name="anio"
             class="form-control"
-            min="1900"
+            min="<?php echo $fechaMin; ?>"
             max="<?= $year + 1 ?>"
             required
             value="<?= $year ?>"
