@@ -3,6 +3,7 @@ require_once(__DIR__ . '/../config/conexion.php');
 require_once(__DIR__ . '/../dao/medicoDAO.php');
 require_once(__DIR__ . '/../models/persona.php');
 
+
 class Medico extends Persona
 {
     private $idEspecializacion;
@@ -113,6 +114,54 @@ class Medico extends Persona
         $this->clave = $registro[6];
         $conexion->cerrarConexion();
         return true;
+    }
+
+    public static function listarMedicos()
+    {
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+        $dao = new MedicoDAO();
+        $conexion->ejecutarConsulta($dao->listarMedicos());
+
+        $medicos = [];
+
+        while ($registro = $conexion->siguienteRegistro()) {
+            $medico = new Medico();
+            $medico->setNumeroIdentificacion($registro[0]);
+            $medico->setIdTipoIdentificacion($registro[1]);
+            $medico->setNombre($registro[2]);
+            $medico->setApellido($registro[3]);
+            $medico->setDireccion($registro[4]);
+            $medico->setIdMunicipioResidencia($registro[5]);
+            $medico->setFechaNacimiento($registro[6]);
+            $medicos[] = $medico;
+        }
+
+        $conexion->cerrarConexion();
+        return $medicos;
+    }
+
+
+    public static function listarPorEspecialidad($idEspecializacion)
+    {
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+        $dao = new MedicoDAO(null, null, null, null, null, null, null, null, $idEspecializacion);
+        $conexion->ejecutarConsulta($dao->listarPorEspecialidad());
+
+        $medicos = [];
+
+        while ($registro = $conexion->siguienteRegistro()) {
+            $medico = new Medico();
+            $medico->setNumeroIdentificacion($registro[0]);
+            $medico->setNombre($registro[1]);
+            $medico->setApellido($registro[2]);
+            $medicos[] = $medico;
+        }
+
+
+        $conexion->cerrarConexion();
+        return $medicos;
     }
 
     public function consultarTodos()
@@ -230,7 +279,7 @@ class Medico extends Persona
         return $this->numeroIdentificacion;
     }
 
-        public function actualizar()
+    public function actualizar()
     {
         $conexion = new Conexion();
         $conexion->abrirConexion();

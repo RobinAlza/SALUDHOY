@@ -210,6 +210,7 @@ if ($tipoAgregacion == 'medicos' || $tipoAgregacion == 'pacientes') {
                 </div>
             </div>
 
+
         </form>
     </div>
 </div>

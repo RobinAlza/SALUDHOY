@@ -1,9 +1,19 @@
 <?php
 if (isset($_POST['sendButton'])) {
     $nombre = $_POST["name"];
-    $clave = ($_POST["password"]);
+    $clave = $_POST["password"];
+
+    // Intentar autenticar como admin
+    $admin = new Admin(null, null, $nombre, null, $clave);
+    if ($admin->autenticar()) {
+        $_SESSION["id"] = $admin->getId();
+        $_SESSION["role"] = "A";
+        header("Location: ?pid=" . base64_encode("views/home.php"));
+    }
+
+    // Intentar autenticar como médico
     $medico = new Medico(null, null, $nombre, null, null, null, null, $clave, null);
-    if($medico->autenticar()) {
+    if ($medico->autenticar()) {
         $_SESSION["id"] = $medico->getNumeroIdentificacion();
         $_SESSION["role"] = "M";
         header("Location: ?pid=" . base64_encode("views/home.php"));
@@ -20,8 +30,21 @@ if (isset($_POST['sendButton'])) {
             $error = true;
         }
     }
+
+    // Intentar autenticar como paciente
+    $paciente = new Paciente(null, null, $nombre, null, null, null, null, $clave, null);
+    if ($paciente->autenticar()) {
+        $_SESSION["id"] = $paciente->getNumeroIdentificacion();
+        $_SESSION["role"] = "P";
+        header("Location: ?pid=" . base64_encode("views/citas.php"));
+    }
+
+    // Si ninguno autenticó
+    echo "no autenticado";
+    $error = true;
 }
 ?>
+
 <section class="h-100">
     <div class="container h-100">
         <div class="row justify-content-sm-center h-100">

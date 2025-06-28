@@ -188,7 +188,7 @@ if ($tipoAgregacion == 'medicos' || $tipoAgregacion == 'pacientes') {
                 type: 'GET',
                 data: {
                     pid: '<?= base64_encode("ajax/tablaUsuarios.php") ?>',
-                    tipo: 'productos',
+                    tipo: 'medicos',
                     filtro: ''
                 },
                 success: function(response) {

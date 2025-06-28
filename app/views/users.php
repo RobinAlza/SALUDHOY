@@ -1,16 +1,9 @@
 <?php
-if ($_SESSION["role"] == "P") {
-    $persona = new Paciente($_SESSION["id"]);
-    $persona->consultarPorId();
-} else if ($_SESSION["role"] == "M") {
-    $persona = new Medico($_SESSION["id"]);
-    $persona->consultarPorId();
-} else {
+if (!isset($_SESSION['id'])) {
     header("Location: ?pid=" . base64_encode("views/login.php"));
-    exit;
+    exit();
 }
-
-//notificacion 
+//notificacion
 $toastVisible = false;
 $toastMensaje = "";
 
@@ -113,9 +106,7 @@ if (isset($_POST['upDate-medicos'])) {
 ?>
 
 <body id="body-pd">
-    <?php
-    include("components/menu.php");
-    ?>
+
     <!--Container Main-->
     <div class="container">
         <h4>Administracion de usuarios</h4>
@@ -161,7 +152,6 @@ if (isset($_POST['upDate-medicos'])) {
     <?php endif; ?>
 
 
-    <script src="js/home.js"></script>
     <script>
         $(document).ready(function() {
             function cargarUsuarios(pagina = 1, filtro = '', tipo = 'medicos') {

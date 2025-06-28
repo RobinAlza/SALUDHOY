@@ -1,31 +1,28 @@
 <?php
 class EstadoCitaDAO
 {
-    private $idEstadoCita;
-    private $estadoCita;
-    private $fechaInicio;
-    private $fechaTerminacion;
-    private $motivo;
+    private $id_estado_cita ;
+    private $descripcion_estado;
 
-    public function __construct($idEstadoCita = 0, $estadoCita = "", $fechaInicio = "", $fechaTerminacion = null, $motivo = null)
+
+
+    public function __construct($id_estado_cita = 0, $descripcion_estado = "")
     {
-        $this->idEstadoCita = $idEstadoCita;
-        $this->estadoCita = $estadoCita;
-        $this->fechaInicio = $fechaInicio;
-        $this->fechaTerminacion = $fechaTerminacion;
-        $this->motivo = $motivo;
+        $this->id_estado_cita = $id_estado_cita;
+        $this->descripcion_estado = $descripcion_estado;
+
     }
 
     public function consultarPorId()
     {
-        return "SELECT estado_cita, fecha_inicio, fecha_terminacion, motivo
-                FROM estado_cita
-                WHERE id_estado_cita = $this->idEstadoCita";
+        return "SELECT descripcion_estado
+                FROM  estado_cita
+                WHERE id_estado_cita = $this->id_estado_cita";
     }
 
     public function consultarTodos()
     {
-        return "SELECT id_estado_cita, estado_cita, fecha_inicio, fecha_terminacion, motivo
-                FROM estado_cita";
+        return "SELECT id_estado_cita, descripcion_estado
+                FROM  estado_cita";
     }
 }

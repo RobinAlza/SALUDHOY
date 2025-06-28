@@ -49,5 +49,13 @@ class Conexion
     {
         return $this->resultado ? $this->resultado->num_rows : 0;
     }
+
+    public function ejecutarConsultaConId($sql)
+    {
+        $resultado = $this->mysqlConexion->query($sql);
+        if ($resultado) {
+            return $this->mysqlConexion->insert_id;
+        }
+        return false;
+    }
 }
-?>
