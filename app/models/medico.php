@@ -7,7 +7,7 @@ require_once(__DIR__ . '/../models/persona.php');
 class Medico extends Persona
 {
     private $idEspecializacion;
-    private $id_medico;
+    private $id_medico=0;
 
     public function getIdEspecializacion()
     {

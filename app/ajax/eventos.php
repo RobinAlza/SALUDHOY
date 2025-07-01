@@ -7,9 +7,13 @@ require_once(__DIR__ . '/../models/medico.php');
 session_start();
 
 
+
 if (isset($_GET['year'], $_GET['month'], $_GET['day']) && 
     isset($_SESSION["role"], $_SESSION["id"]) && 
     $_SESSION["role"] === "M") {
+    
+    $medico = new Medico($_SESSION["id"]);
+    $medico->consultarPorId();
 
     $year = intval($_GET['year']);
     $month  = intval($_GET['month']);
@@ -17,6 +21,12 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
 
     // Formato YYYY-MM-DD
     $fechaCompleta = sprintf('%04d-%02d-%02d', $year, $month, $day);
+    var_dump($fechaCompleta);
+
+    $id_medico = $medico->getIdMedico();
+    var_dump($id_medico);
+
+    var_dump($_SESSION["id"]);
 
 
     // Instanciar conexión
@@ -29,7 +39,7 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
 
 
     // Ejecutar consulta
-    $resultados = $conexion->ejecutarConsulta($medicoDAO->agenda($fechaCompleta, $medico->getIdMedico()));
+    $resultados = $conexion->ejecutarConsulta($medicoDAO->agenda($fechaCompleta, $id_medico));
 
     // Mostrar tabla
     if (!empty($resultados)) {
