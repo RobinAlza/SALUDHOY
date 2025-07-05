@@ -2,19 +2,20 @@
 if (isset($_POST['sendButton'])) {
     $nombre = $_POST["name"];
     $clave = ($_POST["password"]);
-    $persona = new Paciente(null, null, $nombre, null, null, null, null, $clave, null);
-    if ($persona->autenticar()) {
-        $_SESSION["id"] = $persona->getNumeroIdentificacion();
-        $_SESSION["role"] = "P";
+    $Medico = new Medico(null, null, $nombre, null, null, null, null, $clave, null);
+    if ($Medico->autenticar()) {
+        $_SESSION["id"] = $Medico->getNumeroIdentificacion();
+        $_SESSION["role"] = "M";
         header("Location: ?pid=" . base64_encode("views/home.php"));
-        exit();
-    } else {
-        $persona = new Medico(null, null, $nombre, null, null, null, null, $clave, null);
-        if ($persona->autenticar()) {
+        exit;
+  }else 
+  {
+   $persona = new Paciente(null, null, $nombre, null, null, null, null, $clave, null);
+        if($persona->autenticar()) {
             $_SESSION["id"] = $persona->getNumeroIdentificacion();
-            $_SESSION["role"] = "M";
+            $_SESSION["role"] = "P";
             header("Location: ?pid=" . base64_encode("views/home.php"));
-            exit();
+            exit;
         } else {
             $error = true;
         }
