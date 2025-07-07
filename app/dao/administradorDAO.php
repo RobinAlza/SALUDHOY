@@ -18,7 +18,7 @@ class AdminDAO
 
     public function autenticar()
     {
-        return "SELECT id FROM administrador WHERE nombre = '$this->nombre' AND clave = '$this->clave' ";
+        return "SELECT id FROM administrador WHERE nombre = '$this->nombre' AND clave = '$this->clave'";
     }
 
 

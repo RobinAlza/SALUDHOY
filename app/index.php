@@ -60,8 +60,6 @@ $pagesWithSession = array(
 
 <body>
     <div id="body-pd">
-
-
         <?php
         if (!isset($_GET["pid"])) {
             include("views/login.php");

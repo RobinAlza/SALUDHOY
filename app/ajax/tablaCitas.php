@@ -1,4 +1,5 @@
 <?php
+session_start();
 $items = [];
 if (isset($_GET['tipo'])) {
   $tipo = $_GET['tipo'];
@@ -6,14 +7,22 @@ if (isset($_GET['tipo'])) {
   $idPaciente = $_GET['id'];
 
   $cita = new CitaMedica();
-  if ($tipo === "historico") {
-    $items = $cita->consultaHistorico($idPaciente);
-  } elseif ($tipo === "pendientes") {
-    $items = $cita->consultaPendientes($idPaciente);
+  if ($_SESSION["role"] == 'P') {
+    // Es paciente
+    if ($tipo === "historico") {
+      $items = $cita->consultaHistorico($idPaciente);
+    } elseif ($tipo === "pendientes") {
+      $items = $cita->consultaPendientes($idPaciente);
+    }
+  } else {
+    // Es medico y  admin
+    if ($tipo === "historico") {
+      $items = $cita->consultaCitas();
+    } elseif ($tipo === "pendientes") {
+      $items = $cita->consultaCitas();
+    }
   }
 }
-
-
 
 
 // Definir cantidad de items por página
@@ -60,9 +69,9 @@ $itemsPagina  = array_slice($items, $inicio, $itemsPorPagina);
           <td><?= $item->getIdTipoCita()->getEspecializacion() ?></td>
           <td><?= $item->getIdConsultorio()->getLugarCita() ?></td>
           <td><?= $item->getIdMedico()->nombreCompleto() ?></td>
-          <td>estado</td>
+          <td><?= $item->estadoHistorial ?></td>
           <?php if ($tipo === "historico"): ?>
-            <td>motivo</td>
+            <td><?= $item->motivoHistorial ?></td>
           <?php endif; ?>
           <?php if ($tipo === "pendientes"): ?>
             <!-- Botón Editar -->
@@ -226,7 +235,6 @@ $itemsPagina  = array_slice($items, $inicio, $itemsPorPagina);
 
 
   $(document).ready(function() {
-
     // Al abrir el modal, asignar el id_cita al input oculto
     $('#modalEditar').on('show.bs.modal', function(event) {
       var button = $(event.relatedTarget); // Botón que activó el modal
@@ -235,6 +243,7 @@ $itemsPagina  = array_slice($items, $inicio, $itemsPorPagina);
       // Asignarlo al input oculto dentro del modal
       $('#idCitaEditar').val(idCita);
     });
+
     $('#procesarReagendamiento').on('submit', function(e) {
       e.preventDefault();
 
@@ -249,14 +258,17 @@ $itemsPagina  = array_slice($items, $inicio, $itemsPorPagina);
           if (respuesta.success) {
             alert("Cita Reagendada correctamente.");
             $('#procesarReagendamiento')[0].reset();
+            $('#modalEditar').modal('hide'); // <- este es el correcto
           } else {
             alert("Error: " + respuesta.error);
           }
         },
         error: function(xhr) {
+          console.log("XHR Status:", xhr.status);
+          console.log("XHR Response:", xhr.responseText);
           alert("Error al enviar la solicitud.");
-          console.log(xhr.responseText);
         }
+
       });
     });
   });

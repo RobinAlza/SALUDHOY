@@ -50,7 +50,7 @@ $route = base64_decode($_GET['pid']);
             <div class="nav_list">
                 <?php
                 if ($_SESSION["role"] == 'A') {
-                    // Es cliente
+                    // Es admin
                     $admin = new Admin($_SESSION["id"]);
                     $admin->consultarPorId();
                 ?>
@@ -67,8 +67,8 @@ $route = base64_decode($_GET['pid']);
                         <span class="nav_name">Agenda</span>
                     </a>
                 <?php
-                } else {
-                    // Es usuario
+                } else if ($_SESSION["role"] == 'M') {
+                    // Es medico
                     $medico = new Medico($_SESSION["id"]);
                     $medico->consultarPorId();
                 ?>
@@ -77,7 +77,7 @@ $route = base64_decode($_GET['pid']);
                         <span class="nav_name">Agenda</span>
                     </a>
                 <?php
-                }
+                } 
                 ?>
                 <a href="?pid=<?= base64_encode("views/citas.php") ?>" class="nav_link <?= ($route == "views/citas.php") ? "active" : "" ?>">
                     <span class="material-symbols-rounded nav_icon">assignment_add</span>

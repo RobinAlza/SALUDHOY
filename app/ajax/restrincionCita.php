@@ -1,4 +1,7 @@
 <?php
+ob_clean(); // Limpia cualquier salida previa
+header('Content-Type: application/json'); // Asegura que se devuelva JSON
+
 require_once(__DIR__ . '/../models/medico.php');
 require_once(__DIR__ . '/../models/citaMedica.php');
 
@@ -6,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_especialidad'], $_
     $idEspecialidad = intval($_POST['id_especialidad']);
     $idPaciente = intval($_POST['id_paciente']);
 
-    // Verificar si ya tiene 2 citas este mes para esta especialidad (excepto medicina general)
     $citaMedica = new CitaMedica();
     $cantidad = $citaMedica->restrincionCita($idPaciente, $idEspecialidad);
 
@@ -15,13 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_especialidad'], $_
         exit;
     }
 
-
     $medico = new Medico();
     $medicos = $medico->listarPorEspecialidad($idEspecialidad);
 
-    // Si se permite agendar, cargar médicos
     $medicosArray = [];
-
     foreach ($medicos as $medico) {
         $medicosArray[] = [
             'numero_identificacion' => $medico->getNumeroIdentificacion(),
@@ -34,4 +33,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_especialidad'], $_
         "permitido" => true,
         "medicos" => $medicosArray
     ]);
+    exit;
 }

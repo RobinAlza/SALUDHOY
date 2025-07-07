@@ -27,7 +27,7 @@ if (isset($_POST['sendButton'])) {
         header("Location: ?pid=" . base64_encode("views/citas.php"));
     }
 
-    // Si ninguno autenticó
+    // Si ninguno autentico
     echo "no autenticado";
     $error = true;
 }

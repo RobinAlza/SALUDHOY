@@ -150,7 +150,8 @@ $cons = $con->consultarTodos();
                 }
             });
         });
-    });
+    })
+    
     document.getElementById('tipoCita').addEventListener('change', function() {
         console.log("Cambio detectado en tipoCita"); 
 
