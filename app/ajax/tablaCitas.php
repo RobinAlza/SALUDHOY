@@ -72,7 +72,7 @@ $itemsPagina  = array_slice($items, $inicio, $itemsPorPagina);
                 data-bs-toggle="modal"
                 data-bs-target="#modalEditar"
                 data-id="<?= $item->getCodigoCita() ?>"
-                style="color: white;">
+                style="color: white;"> 
                 <span class='material-symbols-rounded'>edit</span>
               </button>
             </td>

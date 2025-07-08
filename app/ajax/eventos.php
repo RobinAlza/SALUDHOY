@@ -54,18 +54,31 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Tipo Paciente</th>
+                    <th>Fecha Cita</th>
+                    <th>Ver Detalles</th>
                 </tr>
               </thead><tbody>";
 
         foreach ($resultados as $fila) {
-            echo "<tr>
-                    <td>{$fila['codigo_cita']}</td>
-                    <td>{$fila['lugar_cita']}</td>
-                    <td>{$fila['id_paciente']}</td>
-                    <td>{$fila['nombre']}</td>
-                    <td>{$fila['apellido']}</td>
-                    <td>{$fila['nombre_tipo']}</td>
-                  </tr>";
+        echo "<tr>
+                <td>{$fila['codigo_cita']}</td>
+                <td>{$fila['lugar_cita']}</td>
+                <td>{$fila['id_paciente']}</td>
+                <td>{$fila['nombre']}</td>
+                <td>{$fila['apellido']}</td>
+                <td>{$fila['nombre_tipo']}</td>
+                <td>{$fila['fecha_cita']}</td>
+                <td>
+                    <button type='button' class='btn btn-outline-primary ver-detalle-btn' 
+                        data-id='{$fila['codigo_cita']}' 
+                        data-fecha='{$fila['fecha_cita']}' 
+                        data-bs-toggle='modal' 
+                        data-bs-target='#detalleModal'>
+                        <span class='material-symbols-rounded'>visibility</span>
+                    </button>
+                </td>
+            </tr>";
+
         }
 
         echo "</tbody></table></div>";
@@ -75,3 +88,46 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
 } else {
     echo "<div class='alert alert-warning'>Faltan datos o permisos para mostrar las citas.</div>";
 }
+echo "<div class='modal fade' id='detalleModal' tabindex='-1' aria-labelledby='detalleModalLabel' aria-hidden='true'>
+  <div class='modal-dialog modal-lg'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title' id='detalleModalLabel'>Detalles de la Cita</h5>
+        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Cerrar'></button>
+      </div>
+      <div class='modal-body' id='detalleContenido'>
+        <!-- Aquí se cargará detalles.php vía AJAX -->
+        <p>Cargando detalles...</p>
+      </div>
+      <div class='modal-footer'>
+        <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+"
+?>
+<script>
+  //  detalles en el modal
+  $(document).on('click', '.ver-detalle-btn', function() {
+      var idCita = $(this).data('id');
+
+      $('#detalleContenido').html('<p>Cargando detalles...</p>');
+
+      $.ajax({
+          url: 'ajax/detalles.php',
+          type: 'GET',
+          data: { 
+            id: idCita
+           },
+          success: function(response) {
+              $('#detalleContenido').html(response);
+          },
+          error: function(xhr) {
+              $('#detalleContenido').html('<p class="text-danger">Error al cargar detalles.</p>');
+              console.log(xhr.responseText);
+          }
+      });
+  });
+
+</script>

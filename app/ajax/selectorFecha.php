@@ -6,7 +6,7 @@ require_once '../models/medico.php';
 if ($_SESSION["role"] !== "M") {
     header("Location: ?pid=" . base64_encode("views/sinPermisos.php"));
     exit;
-}
+}   
 
 // Creamos el objeto Medico y obtenemos año/mes actuales y año minimo
 $persona = new Medico($_SESSION["id"]);
@@ -21,6 +21,7 @@ $month = date('m');
 ?>
 <div class="selectorFecha p-3">
     <h4>Seleccione la fecha para ver las citas agendadas en el mes</h4>
+    <p></p>
     <div class="mb-2">
         <label for="anioInput" class="form-label">Año</label>
         <input
@@ -54,6 +55,7 @@ $month = date('m');
 
 <script>
 $(document).ready(function() {
+    var $btn = '<?= $btn=$_GET['btn']?>';
     $('#ok').on('click', function(e) {
         e.preventDefault();
 
@@ -67,7 +69,8 @@ $(document).ready(function() {
             type: 'GET',
             data: {
                 anio: $('#anioInput').val(),
-                mes:  mes
+                mes:  mes,
+                btn: $btn
             },
             success: function(response) {
                 $('#data-component').html(response);

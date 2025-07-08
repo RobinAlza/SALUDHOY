@@ -76,5 +76,83 @@ class HorarioDisponible
         $conexion->cerrarConexion();
         return $lista;
     }
+    public function comprobacionDisponibilidad($fecha, $id_medico)
+    {
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+        $dao = new HorarioDisponibleDAO();
+
+        // Obtener disponibilidad
+        $rs1 = $conexion->ejecutarConsulta($dao->consultarPorFecha($fecha, $id_medico)); // Disponibles
+        $rs2 = $conexion->ejecutarConsulta($dao->consultarYa($fecha, $id_medico)); // Citas
+
+        $lista = array();
+
+        // Convertir a arrays de búsqueda rápida
+        $disponibles = array();
+        if (!empty($rs1)) {
+            foreach ($rs1 as $fila1) {
+                $hora = substr($fila1['fecha_horario'], 11, 8); // Extrae HH:MM:SS
+                $disponibles[$hora] = true;
+            }
+        }
+
+        $ocupadas = array();
+        if (!empty($rs2)) {
+            foreach ($rs2 as $fila2) {
+                $hora = substr($fila2['fecha_cita'], 11, 8);
+                $ocupadas[$hora] = true;
+            }
+        }
+
+        // Generar las 24 horas con su estado
+        for ($h = 0; $h < 24; $h++) {
+            $hora = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00:00';
+
+            if (isset($ocupadas[$hora])) {
+                $estado = 1; // Ocupada (rojo)
+            } elseif (isset($disponibles[$hora])) {
+                $estado = 2; // Disponible (verde)
+            } else {
+                $estado = 0; // No habilitada (gris)
+            }
+
+            $lista[] = ['hora' => $hora, 'estado' => $estado];
+        }
+
+        $conexion->cerrarConexion();
+        return $lista;
+    }
+    
+    public function guardarFranjaHoraria($horas, $fecha, $id_medico) {
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+        $dao = new HorarioDisponibleDAO();
+
+        foreach ($horas as $hora) {
+            $hora_inicio = $hora['hora'];
+            $estado = $hora['estado'];
+
+            if ($estado == 1) {
+                // Si es habilitado (o modificado a habilitado), INSERT o UPDATE
+                $conexion->ejecutarConsulta($dao->insertar($fecha, $hora_inicio, $id_medico));
+            } else {
+                // Si está deshabilitado, verificar primero si existía en la base de datos
+                $existe = $conexion->ejecutarConsulta($dao->franjaHorariaEspecifica($fecha, $hora_inicio, $id_medico));
+
+                if (!empty($existe)) {
+                    // Si existe, eliminarla
+                    $conexion->ejecutarConsulta($dao->eliminar($fecha, $hora_inicio, $id_medico));
+                }
+                // Si no existe, no hace nada
+            }
+
+        }
+
+        $conexion->cerrarConexion();
+        return true;
+    }
+
+
 }
 ?>

@@ -116,7 +116,7 @@ class MedicoDAO
                 clave = '$this->clave'
             WHERE numero_identificacion = $this->numeroIdentificacion";
     }
-
+    
     public function consultarTodos()
     {
         return "SELECT id_persona, id_especializacion
@@ -130,7 +130,8 @@ class MedicoDAO
                     cm.id_paciente, 
                     per.nombre, 
                     per.apellido, 
-                    tp.nombre_tipo
+                    tp.nombre_tipo,
+                    cm.fecha_cita
                 FROM cita_medica AS cm
                 JOIN medico AS m 
                     ON cm.id_medico = m.id_medico

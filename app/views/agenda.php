@@ -41,10 +41,13 @@ if ($_SESSION["role"] == "M") {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
     $(document).ready(function () {
-        function cargarFormularioAgenda() {
+        function cargarFormularioAgenda(btnValue) {
             $.ajax({
                 url: 'ajax/selectorFecha.php',
                 type: 'GET',
+                data: {
+                    btn: btnValue
+                },
                 success: function (response) {
                     $('#data-component').html(response);
                 },
@@ -55,14 +58,15 @@ if ($_SESSION["role"] == "M") {
         }
 
         $('button[data-value]').on('click', function () {
-            const tipo = $(this).data('value');
-            $('button[data-value]').removeClass('active');
-            $(this).addClass('active');
 
-            if (tipo === "agenda") {
-                cargarFormularioAgenda();
-            } else if (tipo === "disponibilidad") {
-                $('#data-component').html("<p class='text-info'>Funcionalidad de disponibilidad aún no implementada.</p>");
+            const tipo = $(this).data('value');
+
+            $('button[data-value]').removeClass('active');
+
+            $(this).addClass('active');
+            
+            if (tipo === "agenda" || tipo === "disponibilidad") {
+                cargarFormularioAgenda(tipo);
             }
         });
     });

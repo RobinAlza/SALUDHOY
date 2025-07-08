@@ -246,4 +246,35 @@ class CitaMedica
 
         return intval($fila['total_citas']);
     }
+
+    public function obtenerDetallesCita($idCita)
+    {
+        $citaDAO = new CitaMedicaDAO();
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+        $conexion->ejecutarConsulta($citaDAO->detalleCita($idCita));
+
+        if ($registro = $conexion->siguienteRegistro()) {
+            // Construir el arreglo con los campos de la consulta
+            $detalles = array(
+                "codigo_cita" => $registro[0],
+                "lugar_cita" => $registro[1],
+                "nombre_medico" => $registro[2],
+                "especializacion" => $registro[3],
+                "nombre_paciente" => $registro[4],
+                "numero_identificacion_paciente" => $registro[5],
+                "tipo_paciente" => $registro[6],
+                "fecha_inicio" => $registro[7],
+                "fecha_terminacion" => $registro[8],
+                "motivo" => $registro[9],
+                "descripcion_estado" => $registro[10]
+            );
+            $conexion->cerrarConexion();
+            return $detalles;
+        } else {
+            $conexion->cerrarConexion();
+            return false;
+        }
+    }
+
 }
