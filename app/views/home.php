@@ -5,10 +5,13 @@ if ($_SESSION["role"] == "P") {
 } else if ($_SESSION["role"] == "M") {
     $persona = new Medico($_SESSION["id"]);
     $persona->consultarPorId();
+} else if ($_SESSION["role"] == "A") {
+    // Solo permitir acceso, sin hacer nada más
 } else {
     header("Location: ?pid=" . base64_encode("views/login.php"));
     exit();
 }
+
 ?>
 <body id="body-pd">
     <?php include("components/menu.php"); ?>
@@ -21,7 +24,18 @@ if ($_SESSION["role"] == "P") {
         <div class="alert alert-info mb-4">
             Se muestran las estadísticas de los últimos 6 meses
         </div>
-
+        <?php if ($_SESSION["role"] == "A"): ?>
+        <!-- Filtro para administrador -->
+        <div class="card mb-4 p-3">
+        <label for="filtroRol" class="form-label"><strong>Filtrar estadísticas por tipo de usuario:</strong></label>
+        <select id="filtroRol" class="form-select">
+        <option value="">Seleccione</option>
+        <option value="P">Paciente</option>
+        <option value="M">Médico</option>
+        </select>
+        </div>
+        <div id="graficasAdmin"></div>
+            <?php endif; ?>
         <?php if ($_SESSION["role"] == "P"): ?>
         <!-- Gráfico para paciente: Total de citas por mes -->
         <div class="card mb-5">

@@ -9,9 +9,14 @@ $route = base64_decode($_GET['pid']);
     <div class="dropdown">
         <button class="btn btn-secondary dropdown-toggle d-flex align-items-center justify-content-center" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
             <div class="header_img d-flex align-items-center">
-                <!--<img src="" alt="User Image" id="userImage" class="rounded-circle me-2" style="width: 40px; height: 40px;">-->
-                            <p class="user-name m-0 ms-2 text-center"><?= $persona->getNombre() . " " . $persona->getApellido() . " " ?></p>
+                <!-- Imagen opcional -->
+                <!-- <img src="" alt="User Image" id="userImage" class="rounded-circle me-2" style="width: 40px; height: 40px;"> -->
 
+                <?php if (isset($persona)) : ?>
+                    <p class="user-name m-0 ms-2 text-center"><?= $persona->getNombre() . " " . $persona->getApellido() . " " ?></p>
+                <?php else : ?>
+                    <p class="user-name m-0 ms-2 text-center">Administrador</p>
+                <?php endif; ?>
             </div>
         </button>
         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
@@ -24,6 +29,7 @@ $route = base64_decode($_GET['pid']);
         </ul>
     </div>
 </header>
+
 <div class="l-navbar" id="nav-bar">
     <nav class="nav">
         <div>
@@ -50,8 +56,6 @@ $route = base64_decode($_GET['pid']);
                 </a>
             </div>
         </div>
-        <a href="#" class="nav_link">
-
-        </a>
+        <a href="#" class="nav_link"></a>
     </nav>
 </div>

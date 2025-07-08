@@ -2,26 +2,48 @@
 if (isset($_POST['sendButton'])) {
     $nombre = $_POST["name"];
     $clave = ($_POST["password"]);
-    $Medico = new Medico(null, null, $nombre, null, null, null, null, $clave, null);
-    if ($Medico->autenticar()) {
-        $_SESSION["id"] = $Medico->getNumeroIdentificacion();
+
+    // Autenticación como médico
+    $medico = new Medico(null, null, $nombre, null, null, null, null, $clave, null);
+    if ($medico->autenticar()) {
+        $_SESSION["id"] = $medico->getNumeroIdentificacion();
         $_SESSION["role"] = "M";
         header("Location: ?pid=" . base64_encode("views/home.php"));
         exit;
-  }else 
-  {
-   $persona = new Paciente(null, null, $nombre, null, null, null, null, $clave, null);
-        if($persona->autenticar()) {
-            $_SESSION["id"] = $persona->getNumeroIdentificacion();
-            $_SESSION["role"] = "P";
-            header("Location: ?pid=" . base64_encode("views/home.php"));
-            exit;
-        } else {
-            $error = true;
-        }
     }
+
+    // Autenticación como paciente
+    $paciente = new Paciente(null, null, $nombre, null, null, null, null, $clave, null);
+    if ($paciente->autenticar()) {
+        $_SESSION["id"] = $paciente->getNumeroIdentificacion();
+        $_SESSION["role"] = "P";
+        header("Location: ?pid=" . base64_encode("views/home.php"));
+        exit;
+    }
+
+      // Autenticación como administrador
+
+     include_once __DIR__ . '/../config/conexion.php';
+
+    $conexion = new Conexion();
+    $conexion->abrirConexion();
+
+    $sql = "SELECT * FROM administrador WHERE nombre = '$nombre' AND clave = '$clave' LIMIT 1";
+    $resultado = $conexion->ejecutarConsulta($sql); 
+
+    if ($conexion->numeroFilas() == 1) {
+        $admin = $resultado->fetch_assoc();
+        $_SESSION["id"] = $admin["id"];
+        $_SESSION["role"] = "A";
+        header("Location: ?pid=" . base64_encode("views/home.php"));
+        exit;
+    }
+
+    // Si falla todo
+    $error = true;
 }
 ?>
+
 <section class="h-100">
     <div class="container h-100">
         <div class="row justify-content-sm-center h-100">
