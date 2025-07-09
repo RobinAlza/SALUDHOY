@@ -2,13 +2,13 @@
 if (!isset($_SESSION['id'])) {
     header("Location: ?pid=" . base64_encode("views/login.php"));
     exit();
+
 }
 //notificacion 
 $toastVisible = false;
 $toastMensaje = "";
 
 ?>
-
 <body id="body-pd">
     <!--Container Main-->
     <div class="container">
@@ -129,3 +129,4 @@ $toastMensaje = "";
         });
     </script>
 </body>
+

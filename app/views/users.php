@@ -2,6 +2,7 @@
 if (!isset($_SESSION['id'])) {
     header("Location: ?pid=" . base64_encode("views/login.php"));
     exit();
+
 }
 //notificacion
 $toastVisible = false;
@@ -211,3 +212,4 @@ if (isset($_POST['upDate-medicos'])) {
         });
     </script>
 </body>
+

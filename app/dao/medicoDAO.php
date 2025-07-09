@@ -22,7 +22,7 @@ class MedicoDAO
         $this->fechaNacimiento = $fechaNacimiento;
         $this->clave = $clave;
         $this->idEspecializacion = $idEspecializacion;
-    }
+	}
     public function autenticar()
     {
         return "SELECT p.numero_identificacion, p.nombre, p.clave

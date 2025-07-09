@@ -1,9 +1,11 @@
 <?php
+ob_start(); 
 session_start();
 if (isset($_GET["CerrarSesion"])) {
     session_destroy();
     exit();
 }
+
 
 require("models/persona.php");
 require("models/paciente.php");
@@ -74,7 +76,5 @@ $pagesWithSession = array(
     </div>
 
 </body>
-
 <script src="js/home.js"></script>
-
-</html>
+<?php ob_end_flush(); ?>

@@ -40,6 +40,7 @@ $route = base64_decode($_GET['pid']);
         </ul>
     </div>
 </header>
+
 <div class="l-navbar" id="nav-bar">
     <nav class="nav">
         <div>
@@ -48,16 +49,17 @@ $route = base64_decode($_GET['pid']);
                 <span class="nav_logo-name">SALUDHOY</span>
             </a>
             <div class="nav_list">
+                <a href="?pid=<?= base64_encode("views/home.php") ?>" class="nav_link <?= ($route == "views/home.php") ? "active" : "" ?>">
+                    <span class="material-symbols-rounded nav_icon">Home</span>
+                    <span class="nav_name">Home</span>
+                </a>
                 <?php
                 if ($_SESSION["role"] == 'A') {
                     // Es admin
                     $admin = new Admin($_SESSION["id"]);
                     $admin->consultarPorId();
                 ?>
-                    <a href="?pid=<?= base64_encode("views/home.php") ?>" class="nav_link <?= ($route == "views/home.php") ? "active" : "" ?>">
-                        <span class="material-symbols-rounded nav_icon">Home</span>
-                        <span class="nav_name">Home</span>
-                    </a>
+
                     <a href="?pid=<?= base64_encode("views/users.php") ?>" class="nav_link <?= ($route == "views/users.php") ? "active" : "" ?>">
                         <span class="material-symbols-rounded nav_icon">person</span>
                         <span class="nav_name">Users</span>
@@ -77,7 +79,7 @@ $route = base64_decode($_GET['pid']);
                         <span class="nav_name">Agenda</span>
                     </a>
                 <?php
-                } 
+                }
                 ?>
                 <a href="?pid=<?= base64_encode("views/citas.php") ?>" class="nav_link <?= ($route == "views/citas.php") ? "active" : "" ?>">
                     <span class="material-symbols-rounded nav_icon">assignment_add</span>
@@ -85,8 +87,6 @@ $route = base64_decode($_GET['pid']);
                 </a>
             </div>
         </div>
-        <a href="#" class="nav_link">
-
-        </a>
+        <a href="#" class="nav_link"></a>
     </nav>
 </div>
