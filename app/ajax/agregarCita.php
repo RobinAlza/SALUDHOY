@@ -16,9 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $fechaIni = date("Y-m-d H:i:s");  // formato compatible con DATETIME
 
-
-
-
         $cita = new CitaMedica(null, $fecha_cita, $consultorio, $especialista, $idPaciente, $tipoCita);
         $idCitaInsertada = $cita->guardarCita();
 

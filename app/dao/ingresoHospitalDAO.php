@@ -13,17 +13,20 @@ class IngresoHospitalDAO
         $this->idCitaMedica = $idCitaMedica;
         $this->fechaIngreso = $fechaIngreso;
     }
-
     public function consultarPorId()
     {
         return "SELECT id_consultorio, id_cita_medica, fecha_ingreso
                 FROM ingreso_hospital
                 WHERE id_ingreso_hospital = $this->idIngresoHospital";
     }
-
     public function consultarTodos()
     {
         return "SELECT id_ingreso_hospital, id_consultorio, id_cita_medica, fecha_ingreso
                 FROM ingreso_hospital";
+    }
+    public  function confirmarAsistencia()
+    {
+        return "INSERT INTO ingreso_hospital(id_consultorio, id_cita_medica, fecha_ingreso) 
+        VALUES ($this->idConsultorio,$this->idCitaMedica,'$this->fechaIngreso')";
     }
 }

@@ -104,11 +104,9 @@ class Persona
         $this->fechaNacimiento = $fechaNacimiento;
         $this->clave = $clave;
     }
-
         public function nombreCompleto()
     {
         return $this->getNombre() . " " . $this->getApellido() . "   ";
     }
 }
-
 ?>

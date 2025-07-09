@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 16-06-2025 a las 03:24:34
+-- Servidor: localhost
+-- Tiempo de generación: 07-07-2025 a las 17:24:25
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -24,6 +24,28 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `administrador`
+--
+
+CREATE TABLE `administrador` (
+  `id` int(11) NOT NULL,
+  `cedula` varchar(20) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `apellido` varchar(50) NOT NULL,
+  `clave` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `administrador`
+--
+
+INSERT INTO `administrador` (`id`, `cedula`, `nombre`, `apellido`, `clave`) VALUES
+(2, '100000010', 'Luis', 'Torres', 'admin123'),
+(3, '100000011', 'Sofía', 'Mejía', 'admin456');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `cita_medica`
 --
 
@@ -33,7 +55,6 @@ CREATE TABLE `cita_medica` (
   `id_consultorio` int(11) NOT NULL,
   `id_medico` int(11) NOT NULL,
   `id_paciente` int(11) NOT NULL,
-  `id_estado_cita` int(11) NOT NULL,
   `id_tipo_cita` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -41,10 +62,22 @@ CREATE TABLE `cita_medica` (
 -- Volcado de datos para la tabla `cita_medica`
 --
 
-INSERT INTO `cita_medica` (`codigo_cita`, `fecha_cita`, `id_consultorio`, `id_medico`, `id_paciente`, `id_estado_cita`, `id_tipo_cita`) VALUES
-(7, '2025-06-01 08:00:00', 1, 6, 1, 1, 1),
-(8, '2025-06-02 09:00:00', 2, 7, 2, 2, 2),
-(1010, '2025-06-11 00:13:09', 2, 19, 2, 1, 3);
+INSERT INTO `cita_medica` (`codigo_cita`, `fecha_cita`, `id_consultorio`, `id_medico`, `id_paciente`, `id_tipo_cita`) VALUES
+(1030, '2025-07-01 09:00:00', 1, 2, 1, 2),
+(1031, '2025-07-02 10:00:00', 2, 3, 2, 3),
+(1032, '2025-07-03 11:00:00', 1, 1, 3, 1),
+(1033, '2025-07-04 08:30:00', 2, 1, 4, 1),
+(1034, '2025-07-05 14:00:00', 1, 2, 5, 2),
+(1035, '2025-02-10 09:00:00', 1, 1, 4, 1),
+(1036, '2025-02-15 10:00:00', 2, 2, 5, 2),
+(1037, '2025-03-05 08:30:00', 1, 3, 1, 3),
+(1038, '2025-03-12 11:00:00', 1, 1, 3, 1),
+(1039, '2025-04-02 09:15:00', 2, 2, 2, 2),
+(1040, '2025-04-20 14:00:00', 1, 3, 4, 3),
+(1041, '2025-05-05 08:00:00', 2, 1, 5, 1),
+(1042, '2025-05-18 10:45:00', 1, 2, 1, 2),
+(1043, '2025-06-01 09:00:00', 1, 3, 2, 3),
+(1044, '2025-06-15 13:30:00', 2, 2, 3, 2);
 
 -- --------------------------------------------------------
 
@@ -83,7 +116,8 @@ CREATE TABLE `especializacion` (
 INSERT INTO `especializacion` (`id_especializacion`, `especializacion`) VALUES
 (1, 'Medicina General'),
 (2, 'Pediatría'),
-(3, 'Cardiología');
+(3, 'Cardiología'),
+(4, 'odontologia');
 
 -- --------------------------------------------------------
 
@@ -93,19 +127,52 @@ INSERT INTO `especializacion` (`id_especializacion`, `especializacion`) VALUES
 
 CREATE TABLE `estado_cita` (
   `id_estado_cita` int(11) NOT NULL,
-  `estado_cita` varchar(50) NOT NULL,
-  `fecha_inicio` datetime NOT NULL,
-  `fecha_terminacion` datetime DEFAULT NULL,
-  `motivo` varchar(200) DEFAULT NULL
+  `descripcion_estado` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `estado_cita`
 --
 
-INSERT INTO `estado_cita` (`id_estado_cita`, `estado_cita`, `fecha_inicio`, `fecha_terminacion`, `motivo`) VALUES
-(1, 'Programada', '2025-05-29 10:00:00', '2025-06-10 08:41:03', 'inasistencia'),
-(2, 'Cancelada', '2025-05-28 08:00:00', '2025-05-28 09:00:00', 'Paciente no asistió');
+INSERT INTO `estado_cita` (`id_estado_cita`, `descripcion_estado`) VALUES
+(1, 'Programada'),
+(2, 'Cancelada');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `historial_cita`
+--
+
+CREATE TABLE `historial_cita` (
+  `id_historial_cita` int(11) NOT NULL,
+  `codigo_cita` int(11) DEFAULT NULL,
+  `fecha_inicio` datetime NOT NULL,
+  `fecha_terminacion` datetime DEFAULT NULL,
+  `motivo` varchar(200) DEFAULT NULL,
+  `id_estado_cita` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `historial_cita`
+--
+
+INSERT INTO `historial_cita` (`id_historial_cita`, `codigo_cita`, `fecha_inicio`, `fecha_terminacion`, `motivo`, `id_estado_cita`) VALUES
+(1, 1030, '2025-07-01 09:00:00', '2025-07-01 09:30:00', 'Dolor de cabeza', 1),
+(2, 1031, '2025-07-02 10:00:00', '2025-07-02 10:20:00', 'Erupción', 1),
+(3, 1032, '2025-07-03 11:00:00', NULL, 'Dolor abdominal', 1),
+(4, 1033, '2025-07-04 08:30:00', NULL, NULL, 2),
+(5, 1034, '2025-07-05 14:00:00', '2025-07-05 14:45:00', 'Dolor de espalda', 1),
+(6, 1035, '2025-02-10 09:00:00', '2025-02-10 09:30:00', 'Control general', 1),
+(7, 1036, '2025-02-15 10:00:00', NULL, NULL, 2),
+(8, 1037, '2025-03-05 08:30:00', '2025-03-05 08:50:00', 'Chequeo cardiaco', 1),
+(9, 1038, '2025-03-12 11:00:00', NULL, 'No se presentó', 1),
+(10, 1039, '2025-04-02 09:15:00', '2025-04-02 09:45:00', 'Dolor estomacal', 1),
+(11, 1040, '2025-04-20 14:00:00', '2025-04-20 14:20:00', 'Palpitaciones', 1),
+(12, 1041, '2025-05-05 08:00:00', NULL, 'No se presentó', 1),
+(13, 1042, '2025-05-18 10:45:00', '2025-05-18 11:10:00', 'Consulta pediátrica', 1),
+(14, 1043, '2025-06-01 09:00:00', '2025-06-01 09:25:00', 'Chequeo postoperatorio', 1),
+(15, 1044, '2025-06-15 13:30:00', '2025-06-15 13:55:00', 'Dolor muscular', 1);
 
 -- --------------------------------------------------------
 
@@ -114,7 +181,6 @@ INSERT INTO `estado_cita` (`id_estado_cita`, `estado_cita`, `fecha_inicio`, `fec
 --
 
 CREATE TABLE `horario_disponible` (
-  `id_horario_disponible` int(11) NOT NULL,
   `id_medico` int(11) NOT NULL,
   `fecha_horario` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -123,9 +189,12 @@ CREATE TABLE `horario_disponible` (
 -- Volcado de datos para la tabla `horario_disponible`
 --
 
-INSERT INTO `horario_disponible` (`id_horario_disponible`, `id_medico`, `fecha_horario`) VALUES
-(5, 6, '2025-06-01 08:00:00'),
-(6, 7, '2025-06-01 09:00:00');
+INSERT INTO `horario_disponible` (`id_medico`, `fecha_horario`) VALUES
+(1, '2025-07-01 08:00:00'),
+(2, '2025-07-02 08:00:00'),
+(3, '2025-07-03 08:00:00'),
+(6, '2025-06-01 08:00:00'),
+(7, '2025-06-01 09:00:00');
 
 -- --------------------------------------------------------
 
@@ -157,15 +226,9 @@ CREATE TABLE `medico` (
 --
 
 INSERT INTO `medico` (`id_medico`, `id_numero_identificacion`, `id_especializacion`) VALUES
-(6, 10101010, 1),
-(7, 20202020, 2),
-(8, 40404040, 2),
-(19, 12345678, 1),
-(20, 1234, 1),
-(21, 1234456, 3),
-(22, 54321, 2),
-(23, 12345543, 2),
-(24, 12345223, 2);
+(1, 100000001, 1),
+(2, 100000002, 2),
+(3, 100000003, 3);
 
 -- --------------------------------------------------------
 
@@ -204,12 +267,11 @@ CREATE TABLE `paciente` (
 --
 
 INSERT INTO `paciente` (`id_paciente`, `id_numero_identificacion`, `id_tipo_paciente`) VALUES
-(1, 10101010, 1),
-(2, 20202020, 2),
-(3, 30303030, 2),
-(8, 1234, 1),
-(13, 23546534, 2),
-(14, 1053322859, 1);
+(1, 100000001, 1),
+(2, 100000002, 1),
+(3, 100000003, 2),
+(4, 100000004, 2),
+(5, 100000005, 3);
 
 -- --------------------------------------------------------
 
@@ -233,25 +295,11 @@ CREATE TABLE `persona` (
 --
 
 INSERT INTO `persona` (`numero_identificacion`, `id_tipo_identificacion`, `nombre`, `apellido`, `direccion`, `id_municipio_residencia`, `fecha_nacimiento`, `clave`) VALUES
-(1234, 1, 'karen', 'alza', 'calle 19 #21 -24', 2, '2025-06-06', '12345678'),
-(6543, 3, 'rovinson', 'alza', 'calle 19 #21 -24', 2, '2025-06-25', '0'),
-(54321, 2, 'yerson', 'lara', 'calle 19 #21 -24', 2, '2025-07-04', 'clave789'),
-(54325, 2, 'aSAds', 'alzalas', 'calle 19 #21 -24', 2, '2025-06-26', 'clave789'),
-(123321, 1, 'dsfsfdssdfdsfsf', 'lara', 'calle 19 #21 -24', 3, '2025-12-31', '12345678'),
-(123678, 2, 'dsfsfdssdfdsfsf', 'alzalas', 'calle 19 #21 -24', 2, '2025-12-30', '12345678'),
-(433444, 2, 'robinsonalza', 'lara', 'calle 19 #21 -24', 1, '2024-12-31', 'clave789'),
-(1234456, 3, 'sadsadfdsdff', 'lara', 'calle 19 #21 -24', 2, '2025-06-18', '123456'),
-(10101010, 1, 'pedro', 'Pérez', 'Calle 123 # 80 -06', 1, '1980-05-09', 'clave123'),
-(12345223, 2, 'Juan', 'Pérez', 'Calle 123', 3, '2025-06-20', '1234567'),
-(12345543, 2, 'dsfsfdssdfdsfsf', 'alza', 'calle 19 #21 -24', 2, '2025-12-31', '12345678'),
-(12345678, 2, 'robin', 'lara', 'calle 19 #21 -24', 2, '2025-06-06', '12345678'),
-(20202020, 1, 'Ana', 'García', 'Carrera 45', 2, '1990-03-20', '123456'),
-(23546534, 2, 'johan', 'alza', 'calle 19 #21 -24', 2, '2025-06-16', '12345'),
-(30303030, 2, 'Carlos', 'López', 'Av. 30', 3, '1975-08-10', 'clave789'),
-(40404040, 1, 'jeiller', 'lara', 'calle 104 #14 -80', 1, '2005-05-31', '12345678'),
-(123457805, 2, 'robin', 'lara', 'calle 19 #21 -24', 2, '2025-07-03', '123456'),
-(1053322859, 1, 'Robinsito', 'alza', 'calle 19 #21 -24', 2, '2004-03-31', '12345678'),
-(2147483647, 1, 'robin', 'wqertgfvd', 'calle 19 #21 -24', 1, '2025-06-18', '12345');
+(100000001, 1, 'Ana', 'García', 'Calle 10 #10-10', 1, '1990-05-20', 'claveana'),
+(100000002, 1, 'Pedro', 'Martínez', 'Calle 20 #20-20', 2, '1985-09-10', 'clavepedro'),
+(100000003, 1, 'Karen', 'López', 'Calle 30 #30-30', 3, '1992-11-25', 'clavekaren'),
+(100000004, 1, 'Carlos', 'Pérez', 'Calle 40 #40-40', 1, '1980-01-15', 'clavecarlos'),
+(100000005, 1, 'Laura', 'Ramírez', 'Calle 50 #50-50', 2, '1995-08-05', 'clavelaura');
 
 -- --------------------------------------------------------
 
@@ -269,43 +317,11 @@ CREATE TABLE `telefono_persona` (
 --
 
 INSERT INTO `telefono_persona` (`id_persona`, `telefono`) VALUES
-(1234, '0987654321'),
-(1234, '1234567890'),
-(54321, '123'),
-(1234456, '0987654321'),
-(1234456, '1234567890'),
-(10101010, '3001112212'),
-(12345223, '1234567890'),
-(12345543, '1234561234'),
-(12345543, '1234567899'),
-(20202020, '3102223344'),
-(23546534, '0987654311'),
-(23546534, '1234567890'),
-(30303030, '3203334455'),
-(1053322859, '0987654321'),
-(1053322859, '1234567890');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `tipo_cita`
---
-
-CREATE TABLE `tipo_cita` (
-  `id_tipo_cita` int(11) NOT NULL,
-  `especialidad` varchar(150) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `tipo_cita`
---
-
-INSERT INTO `tipo_cita` (`id_tipo_cita`, `especialidad`) VALUES
-(1, 'Medicina General'),
-(2, 'Pediatría'),
-(3, 'Ginecología'),
-(4, 'Odontología'),
-(5, 'Dermatología');
+(100000001, '3001110001'),
+(100000002, '3001110002'),
+(100000003, '3001110003'),
+(100000004, '3001110004'),
+(100000005, '3001110005');
 
 -- --------------------------------------------------------
 
@@ -352,6 +368,12 @@ INSERT INTO `tipo_paciente` (`id_tipo_paciente`, `nombre_tipo`) VALUES
 --
 
 --
+-- Indices de la tabla `administrador`
+--
+ALTER TABLE `administrador`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `cita_medica`
 --
 ALTER TABLE `cita_medica`
@@ -359,7 +381,6 @@ ALTER TABLE `cita_medica`
   ADD KEY `id_consultorio` (`id_consultorio`),
   ADD KEY `id_medico` (`id_medico`),
   ADD KEY `id_paciente` (`id_paciente`),
-  ADD KEY `id_estado_cita` (`id_estado_cita`),
   ADD KEY `fk_tipo_cita` (`id_tipo_cita`);
 
 --
@@ -381,10 +402,18 @@ ALTER TABLE `estado_cita`
   ADD PRIMARY KEY (`id_estado_cita`);
 
 --
+-- Indices de la tabla `historial_cita`
+--
+ALTER TABLE `historial_cita`
+  ADD PRIMARY KEY (`id_historial_cita`),
+  ADD UNIQUE KEY `codigo_cita` (`codigo_cita`),
+  ADD KEY `fk_id_estado_cita` (`id_estado_cita`);
+
+--
 -- Indices de la tabla `horario_disponible`
 --
 ALTER TABLE `horario_disponible`
-  ADD PRIMARY KEY (`id_horario_disponible`),
+  ADD PRIMARY KEY (`id_medico`,`fecha_horario`),
   ADD KEY `id_medico` (`id_medico`);
 
 --
@@ -432,12 +461,6 @@ ALTER TABLE `telefono_persona`
   ADD PRIMARY KEY (`id_persona`,`telefono`);
 
 --
--- Indices de la tabla `tipo_cita`
---
-ALTER TABLE `tipo_cita`
-  ADD PRIMARY KEY (`id_tipo_cita`);
-
---
 -- Indices de la tabla `tipo_identificacion`
 --
 ALTER TABLE `tipo_identificacion`
@@ -454,10 +477,16 @@ ALTER TABLE `tipo_paciente`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `administrador`
+--
+ALTER TABLE `administrador`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT de la tabla `cita_medica`
 --
 ALTER TABLE `cita_medica`
-  MODIFY `codigo_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1011;
+  MODIFY `codigo_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1045;
 
 --
 -- AUTO_INCREMENT de la tabla `consultorio`
@@ -469,7 +498,7 @@ ALTER TABLE `consultorio`
 -- AUTO_INCREMENT de la tabla `especializacion`
 --
 ALTER TABLE `especializacion`
-  MODIFY `id_especializacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_especializacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `estado_cita`
@@ -478,22 +507,22 @@ ALTER TABLE `estado_cita`
   MODIFY `id_estado_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de la tabla `horario_disponible`
+-- AUTO_INCREMENT de la tabla `historial_cita`
 --
-ALTER TABLE `horario_disponible`
-  MODIFY `id_horario_disponible` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+ALTER TABLE `historial_cita`
+  MODIFY `id_historial_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `ingreso_hospital`
 --
 ALTER TABLE `ingreso_hospital`
-  MODIFY `id_ingreso_hospital` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_ingreso_hospital` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `medico`
 --
 ALTER TABLE `medico`
-  MODIFY `id_medico` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id_medico` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT de la tabla `municipio_residencia`
@@ -506,12 +535,6 @@ ALTER TABLE `municipio_residencia`
 --
 ALTER TABLE `paciente`
   MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
-
---
--- AUTO_INCREMENT de la tabla `tipo_cita`
---
-ALTER TABLE `tipo_cita`
-  MODIFY `id_tipo_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_identificacion`
@@ -536,14 +559,14 @@ ALTER TABLE `cita_medica`
   ADD CONSTRAINT `cita_medica_ibfk_1` FOREIGN KEY (`id_consultorio`) REFERENCES `consultorio` (`id_consultorio`),
   ADD CONSTRAINT `cita_medica_ibfk_2` FOREIGN KEY (`id_medico`) REFERENCES `medico` (`id_medico`),
   ADD CONSTRAINT `cita_medica_ibfk_3` FOREIGN KEY (`id_paciente`) REFERENCES `paciente` (`id_paciente`),
-  ADD CONSTRAINT `cita_medica_ibfk_4` FOREIGN KEY (`id_estado_cita`) REFERENCES `estado_cita` (`id_estado_cita`),
-  ADD CONSTRAINT `fk_tipo_cita` FOREIGN KEY (`id_tipo_cita`) REFERENCES `tipo_cita` (`id_tipo_cita`);
+  ADD CONSTRAINT `fk_tipo_cita` FOREIGN KEY (`id_tipo_cita`) REFERENCES `especializacion` (`id_especializacion`);
 
 --
--- Filtros para la tabla `horario_disponible`
+-- Filtros para la tabla `historial_cita`
 --
-ALTER TABLE `horario_disponible`
-  ADD CONSTRAINT `horario_disponible_ibfk_1` FOREIGN KEY (`id_medico`) REFERENCES `medico` (`id_medico`);
+ALTER TABLE `historial_cita`
+  ADD CONSTRAINT `fk_id_estado_cita` FOREIGN KEY (`id_estado_cita`) REFERENCES `estado_cita` (`id_estado_cita`),
+  ADD CONSTRAINT `historial_cita_ibfk_1` FOREIGN KEY (`codigo_cita`) REFERENCES `cita_medica` (`codigo_cita`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `ingreso_hospital`

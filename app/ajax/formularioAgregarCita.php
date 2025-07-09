@@ -9,6 +9,10 @@ $idPasiente = $paciente->consultarPorIdentificacion();
 $tipo = new Especializacion();
 $tipos = $tipo->consultarTodos();
 
+//pacientes
+$paci = new Paciente();
+$pacientes = $paci->consultarTodos();
+
 //select medico
 $medico = new Medico();
 $medicos = $medico->listarMedicos();
@@ -27,8 +31,6 @@ $cons = $con->consultarTodos();
 
         <form id="add-Cita" method="post" enctype="multipart/form-data">
             <div class="row">
-                <input type="hidden" name="id_paciente" id="id_paciente" value="<?= $paciente->getNumeroIdentificacion() ?>">
-
                 <!-- especilidad de cita -->
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -51,12 +53,13 @@ $cons = $con->consultarTodos();
                             <option value="-1">Seleccione...</option>
                             <?php foreach ($medicos as $tipoActual) { ?>
                                 <option value="<?= $tipoActual->getNumeroIdentificacion(); ?>">
-                                    <?= $tipoActual->getNombre(); ?>
+                                    <?= $tipoActual->nombreCompleto() ?>
                                 </option>
                             <?php } ?>
                         </select>
                     </div>
                 </div>
+
                 <!-- Fecha de la cita -->
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -86,7 +89,24 @@ $cons = $con->consultarTodos();
                         </select>
                     </div>
                 </div>
-
+                <?php if ($_SESSION["role"] == 'A') { ?>
+                    <!-- Pacientes -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_paciente" class="form-label">* Paciente</label>
+                            <select class="form-select" name="id_paciente" id="id_paciente" required>
+                                <option value="-1">Seleccione...</option>
+                                <?php foreach ($pacientes as $tipoActual) { ?>
+                                    <option value="<?= $tipoActual->getNumeroIdentificacion(); ?>">
+                                        <?= $tipoActual->nombreCompleto() ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                <?php } else { ?>
+                    <input type="hidden" name="id_paciente" id="id_paciente" value="<?= $paciente->getNumeroIdentificacion() ?>">
+                <?php } ?>
             </div>
 
             <!-- Botones -->
@@ -150,9 +170,10 @@ $cons = $con->consultarTodos();
                 }
             });
         });
-    });
+    })
+
     document.getElementById('tipoCita').addEventListener('change', function() {
-        console.log("Cambio detectado en tipoCita"); 
+        console.log("Cambio detectado en tipoCita");
 
         const especialidadId = this.value;
         const pacienteId = document.getElementById('id_paciente').value;
@@ -166,6 +187,8 @@ $cons = $con->consultarTodos();
             })
             .then(response => response.json())
             .then(data => {
+                console.log(data); // <-- esto
+
                 if (data.permitido === false) {
                     // Si no puede agendar, mostrar alerta y resetear select
                     alert("⚠️ No puedes agendar más de 2 citas para esta especialidad este mes.");

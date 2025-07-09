@@ -152,7 +152,5 @@ class HistorialCita
         $conexion->cerrarConexion();
 
         return true;
-    }
-
-    
+    }   
 }

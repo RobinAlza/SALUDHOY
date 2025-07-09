@@ -1,4 +1,6 @@
 <?php
+header('Content-Type: application/json');
+
 require_once(__DIR__ . '/../models/citaMedica.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -15,7 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $resultado = $cita->reagendadaCita();
 
         echo json_encode(["success" => $resultado]);
+        exit;
     } else {
         echo json_encode(["success" => false, "message" => "Faltan datos"]);
+        exit;
     }
 }
+?>

@@ -9,6 +9,7 @@ if ($_SESSION["role"] == "M") {
 } else {
     header("Location: ?pid=" . base64_encode("views/sinPermisos.php"));
     exit();
+
 }
 
 

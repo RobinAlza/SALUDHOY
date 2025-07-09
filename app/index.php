@@ -1,9 +1,11 @@
 <?php
+ob_start(); 
 session_start();
 if (isset($_GET["CerrarSesion"])) {
     session_destroy();
     exit();
 }
+
 
 require("models/persona.php");
 require("models/paciente.php");
@@ -19,14 +21,6 @@ require("models/estadoCita.php");
 require("models/tipoCita.php");
 require("models/historialCita.php");
 require("models/administrador.php");
-
-
-
-
-
-
-
-
 
 $pagesWithOutSession = array(
     "views/login.php"
@@ -60,8 +54,6 @@ $pagesWithSession = array(
 
 <body>
     <div id="body-pd">
-
-
         <?php
         if (!isset($_GET["pid"])) {
             include("views/login.php");
@@ -84,7 +76,5 @@ $pagesWithSession = array(
     </div>
 
 </body>
-
 <script src="js/home.js"></script>
-
-</html>
+<?php ob_end_flush(); ?>

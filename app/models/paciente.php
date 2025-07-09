@@ -127,7 +127,7 @@ class Paciente extends Persona
 
         $lista = array();
         while ($registro = $conexion->siguienteRegistro()) {
-            $obj = new Paciente($registro[0], $registro[1]);
+            $obj = new Paciente($registro[0], $registro[1],$registro[2],$registro[3],$registro[4],$registro[5],$registro[6]);
             array_push($lista, $obj);
         }
         $conexion->cerrarConexion();
