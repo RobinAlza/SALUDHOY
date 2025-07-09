@@ -19,6 +19,8 @@ class HistorialCitaDAO
         $this->estadoCita = $estadoCita;
     }
 
+
+
     public function cancelarCita()
     {
         return "UPDATE historial_cita SET fecha_terminacion = '$this->fechaTerminacion', motivo = '$this->motivo' , id_estado_cita = 2
@@ -40,5 +42,10 @@ class HistorialCitaDAO
     {
         return "INSERT INTO historial_cita(codigo_cita, fecha_inicio, id_estado_cita) 
         VALUES ($this->codigo_cita,'$this->fechaInicio', 1)";
+    }
+    public function modificar(){
+        return  "UPDATE historial_cita SET fecha_terminacion = '$this->fechaTerminacion', motivo = '$this->motivo' , id_estado_cita = $this->estadoCita
+                WHERE codigo_cita = $this->codigo_cita";
+        
     }
 }

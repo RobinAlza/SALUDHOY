@@ -2,46 +2,53 @@
 require_once(__DIR__ . '/../config/conexion.php');
 require_once(__DIR__ . '/../dao/medicoDAO.php');
 require_once(__DIR__ . '/../models/medico.php');
-
+require_once(__DIR__ . '/../models/historialCita.php'); // Asegúrate de tener este require
 
 session_start();
 
+// Procesar POST para editar estado de cita
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['codigo_cita'], $_POST['motivo_edicion'], $_POST['nuevo_estado'])) {
+        $id_cita = $_POST['codigo_cita'];
+        $motivo = $_POST['motivo_edicion'];
+        $nuevoEstado = $_POST['nuevo_estado'];
+        $fechaFin = date("Y-m-d H:i:s");
 
 
-if (isset($_GET['year'], $_GET['month'], $_GET['day']) && 
-    isset($_SESSION["role"], $_SESSION["id"]) && 
+        // Crear objeto HistorialCita con el estado nuevo y motivo
+        $estado = new HistorialCita(0, $id_cita, null, $fechaFin, $motivo, $nuevoEstado);
+
+        $resultado = $estado->updateCita(); 
+
+        echo json_encode(["success" => $resultado]);
+        exit();
+    } else {
+        echo json_encode(["success" => false, "message" => "Faltan datos"]);
+        exit();
+    }
+}
+
+// Validar GET y sesión para mostrar la agenda
+if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
+    isset($_SESSION["role"], $_SESSION["id"]) &&
     $_SESSION["role"] === "M") {
-    
+
     $medico = new Medico($_SESSION["id"]);
     $medico->consultarPorId();
 
     $year = intval($_GET['year']);
-    $month  = intval($_GET['month']);
-    $day  = intval($_GET['day']);
-
-    // Formato YYYY-MM-DD
+    $month = intval($_GET['month']);
+    $day = intval($_GET['day']);
     $fechaCompleta = sprintf('%04d-%02d-%02d', $year, $month, $day);
-    var_dump($fechaCompleta);
 
     $id_medico = $medico->getIdMedico();
-    var_dump($id_medico);
 
-    var_dump($_SESSION["id"]);
-
-
-    // Instanciar conexión
     $conexion = new Conexion();
     $conexion->abrirConexion();
-    
-    $medico = new Medico($_SESSION["id"]);
-    $medico->consultarPorId(); // Para obtener numeroIdentificacion
     $medicoDAO = new MedicoDAO($medico->getNumeroIdentificacion());
 
-
-    // Ejecutar consulta
     $resultados = $conexion->ejecutarConsulta($medicoDAO->agenda($fechaCompleta, $id_medico));
 
-    // Mostrar tabla
     if (!empty($resultados)) {
         echo "<h5>Citas para el día $fechaCompleta</h5>";
         echo "<div class='table-responsive'>";
@@ -55,12 +62,12 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
                     <th>Apellido</th>
                     <th>Tipo Paciente</th>
                     <th>Fecha Cita</th>
-                    <th>Ver Detalles</th>
+                    <th>Acciones</th>
                 </tr>
               </thead><tbody>";
 
         foreach ($resultados as $fila) {
-        echo "<tr>
+            echo "<tr>
                 <td>{$fila['codigo_cita']}</td>
                 <td>{$fila['lugar_cita']}</td>
                 <td>{$fila['id_paciente']}</td>
@@ -76,7 +83,6 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
                         data-bs-target='#detalleModal'>
                         <span class='material-symbols-rounded'>visibility</span>
                     </button>
-                     <!-- Botón Editar -->
                     <button
                       class='btn btn-success btn-editar-usuario'
                       data-bs-toggle='modal'
@@ -85,29 +91,23 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
                       style='color: white;'> 
                       <span class='material-symbols-rounded'>edit</span>
                     </button>
-                    <button
-                      class='btn btn-danger btn-eliminar-usuario'
-                      data-bs-toggle='modal'
-                      data-bs-target='#modalEliminar'
-                      data-id='{$fila['codigo_cita']}'
-                      style='color: white;'>
-                      <span class='material-symbols-rounded'>delete</span>
-                    </button>
                 </td>
             </tr>";
-
         }
 
         echo "</tbody></table></div>";
     } else {
         echo "<p class='text-muted'>No hay citas agendadas para el $fechaCompleta.</p>";
     }
+
+    $conexion->cerrarConexion();
 } else {
     echo "<div class='alert alert-warning'>Faltan datos o permisos para mostrar las citas.</div>";
 }
 
 ?>
 
+<!-- Modal Detalles -->
 <div class='modal fade' id='detalleModal' tabindex='-1' aria-labelledby='detalleModalLabel' aria-hidden='true'>
   <div class='modal-dialog modal-lg'>
     <div class='modal-content'>
@@ -116,7 +116,6 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
         <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Cerrar'></button>
       </div>
       <div class='modal-body' id='detalleContenido'>
-        <!-- Aquí se cargará detalles.php vía AJAX -->
         <p>Cargando detalles...</p>
       </div>
       <div class='modal-footer'>
@@ -126,27 +125,29 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
   </div>
 </div>
 
+<!-- Modal Editar -->
 <div class='modal fade' id='modalEditar' tabindex='-1' aria-labelledby='editarLabel' aria-hidden='true'>
   <div class='modal-dialog'>
-    <form id='procesarReagendamiento'>
+    <form id='procesarEdicion'>
       <div class='modal-content'>
         <div class='modal-header'>
-          <h5 class='modal-title' id='editarLabel'>Reagendar Cita</h5>
+          <h5 class='modal-title' id='editarLabel'>Cambiar Estado de la Cita</h5>
           <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Cerrar'></button>
         </div>
         <div class='modal-body'>
-
-          <!-- Campo oculto para el ID de la cita -->
-          <input type='hidden' name='id_cita' id='idCitaEditar'>
+          <input type='hidden' id='idCitaEditar' name='codigo_cita' value=''>
           <div class='mb-3'>
-            <label for='fecha_cita' class='form-label'> * Fecha Cita</label>
-            <input type='date' class='form-control' name='fecha_cita' required>
+            <label for='nuevo_estado' class='form-label'>Nuevo Estado</label>
+            <select id='nuevo_estado' name='nuevo_estado' class='form-select' required>
+              <option disabled selected>Seleccione estado</option>
+              <option value='3'>Finalizada</option>
+              <option value='4'>Inasistida</option>
+            </select>
           </div>
           <div class='mb-3'>
-            <label for='hora_cita' class='form-label'>* Hora de Cita</label>
-            <input type='time' class='form-control' name='hora_cita' id='hora_cita' required>
+            <label for='motivo_edicion' class='form-label mt-2'>Motivo</label>
+            <textarea name='motivo_edicion' class='form-control' rows='4' placeholder='Escribe el motivo...' required></textarea>
           </div>
-
         </div>
         <div class='modal-footer'>
           <button type='submit' class='btn btn-success'>Guardar cambios</button>
@@ -157,46 +158,16 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
   </div>
 </div>
 
-<div class='modal fade' id='modalEliminar' tabindex='-1' aria-labelledby='eliminarLabel' aria-hidden='true'>
-  <div class='modal-dialog'>
-    <form id='procesarEliminacion'>
-      <div class='modal-content'>
-        <div class='modal-header bg-danger text-white'>
-          <h5 class='modal-title' id='eliminarLabel'>Confirmar Cancelacion</h5>
-          <button type='button' class='btn-close btn-close-white' data-bs-dismiss='modal' aria-label='Cerrar'></button>
-        </div>
-        <div class='modal-body'>
-          <p>¿Estás seguro de que deseas cancelar esta cita?</p>
-
-          <!-- Campo oculto para el ID de la cita -->
-          <input type='hidden' name='id_cita' id='idCitaEliminar'>
-          <!-- Campo textarea para el motivo -->
-          <label for='motivo_cancelacion' class='form-label mt-2'>Motivo de la cancelación</label>
-          <textarea name='motivo_cancelacion' class='form-control' rows='4' placeholder='Escribe el motivo de la cancelación...' required></textarea>
-        </div>
-
-        <div class='modal-footer'>
-          <button type='submit' class='btn btn-danger'>Cancelar</button>
-          <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cerrar</button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
 <script>
-  //  detalles en el modal
+  // Cargar detalles en el modal
   $(document).on('click', '.ver-detalle-btn', function() {
+    
       var idCita = $(this).data('id');
-
       $('#detalleContenido').html('<p>Cargando detalles...</p>');
-
       $.ajax({
           url: 'ajax/detalles.php',
           type: 'GET',
-          data: { 
-            id: idCita
-           },
+          data: { id: idCita },
           success: function(response) {
               $('#detalleContenido').html(response);
           },
@@ -207,4 +178,36 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
       });
   });
 
+  // Preparar modal editar con ID de cita
+  $('#modalEditar').on('show.bs.modal', function(event) {
+    var button = $(event.relatedTarget);
+    var idCita = button.data('id');
+    $('#idCitaEditar').val(idCita);
+  });
+
+  // Procesar edición de estado
+  $('#procesarEdicion').on('submit', function(e) {
+    e.preventDefault();
+    const datosFormulario = $(this).serialize();
+    $.ajax({
+      url: 'ajax/eventos.php', // Ajusta si tu archivo de procesamiento es diferente
+      type: 'POST',
+      data: datosFormulario,
+      dataType: 'json',
+      success: function(respuesta) {
+        if (respuesta.success) {
+          alert("Cita actualizada correctamente.");
+          $('#procesarEdicion')[0].reset();
+          $('#modalEditar').modal('hide');
+          location.reload(); // recarga para actualizar la tabla
+        } else {
+          alert("Error: " + respuesta.message);
+        }
+      },
+      error: function(xhr) {
+        alert("Error al enviar la solicitud.");
+        console.log(xhr.responseText);
+      }
+    });
+  });
 </script>

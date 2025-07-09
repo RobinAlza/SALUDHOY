@@ -19,6 +19,15 @@ class HistorialCita
     {
         $this->codigo_cita = $codigo_cita;
     }
+    
+    public function getEstadoCita()
+    {
+        return $this->estadoCita;
+    }
+    public function setEstadoCita($estadoCita)
+    {
+        $this->estadoCita = $estadoCita;
+    }
 
     public function getIdHistorialCita()
     {
@@ -27,15 +36,6 @@ class HistorialCita
     public function setIdHistorialCita($id_historial_cita)
     {
         $this->id_historial_cita = $id_historial_cita;
-    }
-
-    public function getEstadoCita()
-    {
-        return $this->estadoCita;
-    }
-    public function setEstadoCita($estadoCita)
-    {
-        $this->estadoCita = $estadoCita;
     }
 
     public function getFechaInicio()
@@ -114,12 +114,26 @@ class HistorialCita
         $conexion->cerrarConexion();
         return $lista;
     }
-    public function cancelarCita()
+
+    public function updateCita()
     {
         $conexion = new Conexion();
         $conexion->abrirConexion();
-        $usuarioDAO = new HistorialCitaDAO(null, $this->codigo_cita, null, $this->fechaTerminacion, $this->motivo);
-        $resultado = $conexion->ejecutarConsulta($usuarioDAO->cancelarCita());
+
+        // Asegúrate de que el DAO esté correcto:
+        $dao = new HistorialCitaDAO(
+            0,                      // id_historial_cita
+            $this->codigo_cita,     // codigo_cita
+            $this->fechaInicio,     // fechaInicio
+            $this->fechaTerminacion,// fechaTerminacion
+            $this->motivo,          // motivo
+            $this->estadoCita       // estadoCita
+        );
+
+
+        $sql = $dao->modificar();  // tu método modificar() en el DAO
+        $resultado = $conexion->ejecutarConsulta($sql);
+
         $conexion->cerrarConexion();
         return $resultado;
     }
