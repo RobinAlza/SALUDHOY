@@ -16,12 +16,24 @@ $toastMensaje = "";
     </div>
     <div class="container">
         <div class="row">
-            <div class="col-1">
-                <button type="button" class="btn btn-outline-primary" data-value="pendientes">Pendientes</button>
-            </div>
-            <div class="col-1">
-                <button type="button" class="btn btn-outline-primary" data-value="historico">Historico</button>
-            </div>
+            <?php
+            if ($_SESSION["role"] == 'M') {
+            ?>
+                <div class="col-1">
+                    <button type="button" class="btn btn-outline-primary" data-value="historico">Historico</button>
+                </div>
+            <?php
+            } else {
+            ?>
+                <div class="col-1">
+                    <button type="button" class="btn btn-outline-primary" data-value="pendientes">Pendientes</button>
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-outline-primary" data-value="historico">Historico</button>
+                </div>
+            <?php
+            }
+            ?>
         </div>
         <div class="row mt-2">
             <div class="container">
@@ -59,7 +71,7 @@ $toastMensaje = "";
         $(document).ready(function() {
             const pacienteId = '<?= $_SESSION["id"] ?>';
 
-            function cargarUsuarios(pagina = 1, filtro = '', tipo = 'pendientes') {
+            function cargarUsuarios(pagina = 1, filtro = '', tipo = 'historico') {
                 $.ajax({
                     url: 'indexServer.php',
                     type: 'GET',
@@ -77,7 +89,7 @@ $toastMensaje = "";
             }
 
             // Carga por defecto
-            cargarUsuarios(1, '<?php echo $_GET['filtro'] ?? ""; ?>', 'pendientes');
+            cargarUsuarios(1, '<?php echo $_GET['filtro'] ?? ""; ?>', 'historico');
 
             // Botones tipo usuario
             $('button[data-value]').on('click', function() {
@@ -91,7 +103,7 @@ $toastMensaje = "";
             $('#search').keyup(function() {
                 const filtro = $(this).val();
                 if (filtro.length >= 3 || filtro.length === 0) {
-                    let tipo = $('button[data-value].active').data('value') || 'pendientes';
+                    let tipo = $('button[data-value].active').data('value') || 'historico';
                     cargarUsuarios(1, filtro, tipo);
                 }
             });
@@ -101,7 +113,7 @@ $toastMensaje = "";
                 e.preventDefault();
                 let pagina = $(this).data('pagina');
                 const filtro = $('#search').val();
-                let tipo = $('button[data-value].active').data('value') || 'pendientes';
+                let tipo = $('button[data-value].active').data('value') || 'historico';
 
                 if (!$(this).parent().hasClass('disabled')) {
                     cargarUsuarios(pagina, filtro, tipo);
@@ -110,7 +122,7 @@ $toastMensaje = "";
 
             // Formulario de agregar
             $('#button-addon2').on('click', function() {
-                let tipo = $('button[data-value].active').data('value') || 'pendientes';
+                let tipo = $('button[data-value].active').data('value') || 'historico';
                 let url = 'indexServer.php?pid=<?= base64_encode("ajax/formularioAgregarCita.php") ?>&tipo=' + tipo;
                 $('#data-component').load(url);
             });

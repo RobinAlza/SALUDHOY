@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . '/../config/conexion.php');
-require_once(__DIR__ . '/../dao/IngresoHospitalDAO.php');
+require_once(__DIR__ . '/../dao/ingresoHospitalDAO.php');
 
 class IngresoHospital
 {
@@ -88,5 +88,20 @@ class IngresoHospital
         $conexion->cerrarConexion();
         return $lista;
     }
+
+    public function confirmarAsistencia()
+    {
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+        $dao = new IngresoHospitalDAO(
+            null,
+            $this->idConsultorio,
+            $this->idCitaMedica,
+            $this->fechaIngreso
+        );
+
+        $idCita = $conexion->ejecutarConsulta($dao->confirmarAsistencia());
+        $conexion->cerrarConexion();
+        return $idCita;
+    }
 }
-?>

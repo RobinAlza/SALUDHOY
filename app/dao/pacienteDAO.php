@@ -65,8 +65,16 @@ JOIN tipo_paciente t ON e.id_tipo_paciente  = t.id_tipo_paciente
     }
     public function consultarTodos()
     {
-        return "SELECT numero_identificacion, id_tipo_identificacion, nombre, apellido, direccion, id_municipio_residencia, fecha_nacimiento, id_tipo_paciente, clave
-                FROM persona";
+        return "SELECT 
+                p.id_paciente,
+                per.id_tipo_identificacion,
+                per.nombre,
+                per.apellido,
+                per.direccion,
+                per.id_municipio_residencia,
+                per.fecha_nacimiento
+            FROM paciente p
+            JOIN persona per ON p.id_numero_identificacion = per.numero_identificacion";
     }
 
 

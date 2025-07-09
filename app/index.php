@@ -20,14 +20,6 @@ require("models/tipoCita.php");
 require("models/historialCita.php");
 require("models/administrador.php");
 
-
-
-
-
-
-
-
-
 $pagesWithOutSession = array(
     "views/login.php"
 );

@@ -1,4 +1,4 @@
-x<?php
+<?php
     class CitaMedicaDAO
     {
         private $codigoCita;
@@ -27,7 +27,7 @@ x<?php
                 WHERE codigo_cita = $this->codigoCita";
         }
 
-        public function consultaPendientes()
+        public function consultaPendientes($filtro)
         {
             return "SELECT 
         c.codigo_cita,
@@ -46,13 +46,11 @@ x<?php
     JOIN persona per_m ON m.id_numero_identificacion = per_m.numero_identificacion
     JOIN historial_cita h ON c.codigo_cita = h.codigo_cita
     JOIN estado_cita e ON h.id_estado_cita = e.id_estado_cita
-    WHERE per_p.numero_identificacion = $this->idPaciente AND  e.descripcion_estado = 'Programada'";
+    WHERE per_p.numero_identificacion = $this->idPaciente AND  e.descripcion_estado = 'Programada' AND per_m.nombre LIKE '%" . $filtro . "%'";
         }
 
 
-
-
-        public function consultaHistorico()
+        public function consultaHistorico($filtro)
         {
             return "SELECT 
         c.codigo_cita,
@@ -71,19 +69,30 @@ x<?php
     JOIN persona per_m ON m.id_numero_identificacion = per_m.numero_identificacion
     JOIN historial_cita h ON c.codigo_cita = h.codigo_cita
     JOIN estado_cita e ON h.id_estado_cita = e.id_estado_cita
-    WHERE per_p.numero_identificacion = $this->idPaciente";
+    WHERE per_p.numero_identificacion = $this->idPaciente AND per_m.nombre LIKE '%" . $filtro . "%'";
         }
 
-        public function consultaCitas()
+        public function consultaCitasP($filtro)
         {
             return "SELECT c.codigo_cita, c.fecha_cita, c.id_consultorio, p.id_numero_identificacion, c.id_tipo_cita, per_p.nombre, per_p.apellido, h.motivo, e.descripcion_estado
              FROM cita_medica c 
     JOIN paciente p ON c.id_paciente = p.id_paciente
     JOIN persona per_p ON p.id_numero_identificacion = per_p.numero_identificacion
              JOIN historial_cita h ON c.codigo_cita = h.codigo_cita 
-             JOIN estado_cita e ON h.id_estado_cita = e.id_estado_cita";
+             JOIN estado_cita e ON h.id_estado_cita = e.id_estado_cita
+             WHERE e.descripcion_estado = 'Programada' AND per_p.nombre LIKE '%" . $filtro . "%'";
         }
 
+                public function consultaCitasH($filtro)
+        {
+            return "SELECT c.codigo_cita, c.fecha_cita, c.id_consultorio, p.id_numero_identificacion, c.id_tipo_cita, per_p.nombre, per_p.apellido, h.motivo, e.descripcion_estado
+             FROM cita_medica c 
+    JOIN paciente p ON c.id_paciente = p.id_paciente
+    JOIN persona per_p ON p.id_numero_identificacion = per_p.numero_identificacion
+             JOIN historial_cita h ON c.codigo_cita = h.codigo_cita 
+             JOIN estado_cita e ON h.id_estado_cita = e.id_estado_cita
+             WHERE per_p.nombre LIKE '%" . $filtro . "%'";
+        }
 
         public  function guardarCita()
         {

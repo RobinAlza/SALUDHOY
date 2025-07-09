@@ -288,3 +288,4 @@ class Medico extends Persona
         return $this->numeroIdentificacion;
     }
 }
+?>

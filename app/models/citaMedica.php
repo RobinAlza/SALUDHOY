@@ -97,14 +97,14 @@ class CitaMedica
     }
 
 
-    public function consultaPendientes($numeroIdentificacion)
+    public function consultaPendientes($numeroIdentificacion, $filtro)
     {
         $conexion = new Conexion();
         $conexion->abrirConexion();
 
         // Le pasamos el número de cédula al DAO
         $dao = new CitaMedicaDAO(null, null, null, null, $numeroIdentificacion);
-        $conexion->ejecutarConsulta($dao->consultaPendientes());
+        $conexion->ejecutarConsulta($dao->consultaPendientes($filtro));
 
         $consultorios = [];
         $medicos = [];
@@ -150,14 +150,14 @@ class CitaMedica
         return $citas;
     }
 
-    public function consultaHistorico($numeroIdentificacion)
+    public function consultaHistorico($numeroIdentificacion, $filtro)
     {
         $conexion = new Conexion();
         $conexion->abrirConexion();
 
         // Le pasamos el número de cédula al DAO
         $dao = new CitaMedicaDAO(null, null, null, null, $numeroIdentificacion);
-        $conexion->ejecutarConsulta($dao->consultaHistorico());
+        $conexion->ejecutarConsulta($dao->consultaHistorico($filtro));
 
         $consultorios = [];
         $medicos = [];
@@ -203,14 +203,67 @@ class CitaMedica
         return $citas;
     }
 
-    public function consultaCitas()
+    public function consultaCitasP($filtro)
     {
         $conexion = new Conexion();
         $conexion->abrirConexion();
 
         // Le pasamos el número de cédula al DAO
         $dao = new CitaMedicaDAO();
-        $conexion->ejecutarConsulta($dao->consultaCitas());
+        $conexion->ejecutarConsulta($dao->consultaCitasP($filtro));
+
+        $consultorios = [];
+        $medicos = [];
+        $citas = [];
+        $especialidades = [];
+        while ($registro = $conexion->siguienteRegistro()) {
+
+            // Consultorio
+            $consultorio = $consultorios[$registro[2]] ?? new Consultorio($registro[2]);
+            if (!isset($consultorios[$registro[2]])) {
+                $consultorio->consultarPorId();
+                $consultorios[$registro[2]] = $consultorio;
+            }
+
+            // Médico
+            $medico = $medicos[$registro[3]] ?? new Medico($registro[3]);
+            if (!isset($medicos[$registro[3]])) {
+                $medico->setNombre($registro[5]); // nombre
+                $medico->setApellido($registro[6]); // apellido
+                $medicos[$registro[3]] = $medico;
+            }
+
+            // Especialidad
+            $especialidad = $especialidades[$registro[4]] ?? new Especializacion($registro[4]);
+            if (!isset($especialidades[$registro[4]])) {
+                $especialidad->consultarPorId();
+                $especialidades[$registro[4]] = $especialidad;
+            }
+
+            // Estado y motivo (del historial)
+            $estado = $registro[8]; // descripcion_estado
+            $motivo = $registro[7]; // motivo
+
+            // Crear objeto Cita y asignar estado y motivo como propiedades adicionales (si no están en el modelo, puedes hacer esto como arreglo asociativo o extender la clase)
+            $cita = new CitaMedica($registro[0], $registro[1], $consultorio, $medico, null, $especialidad);
+            $cita->estadoHistorial = $estado;
+            $cita->motivoHistorial = $motivo;
+
+            array_push($citas, $cita);
+        }
+
+        $conexion->cerrarConexion();
+        return $citas;
+    }
+
+    public function consultaCitasH($filtro)
+    {
+        $conexion = new Conexion();
+        $conexion->abrirConexion();
+
+        // Le pasamos el número de cédula al DAO
+        $dao = new CitaMedicaDAO();
+        $conexion->ejecutarConsulta($dao->consultaCitasH($filtro));
 
         $consultorios = [];
         $medicos = [];

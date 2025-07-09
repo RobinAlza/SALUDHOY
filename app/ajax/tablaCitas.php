@@ -8,18 +8,18 @@ if (isset($_GET['tipo'])) {
 
   $cita = new CitaMedica();
   if ($_SESSION["role"] == 'P') {
-    // Es paciente
+    //Es paciente
     if ($tipo === "historico") {
-      $items = $cita->consultaHistorico($idPaciente);
+      $items = $cita->consultaHistorico($idPaciente, $filtro);
     } elseif ($tipo === "pendientes") {
-      $items = $cita->consultaPendientes($idPaciente);
+      $items = $cita->consultaPendientes($idPaciente, $filtro);
     }
   } else {
-    // Es medico y  admin
+    //Es medico y admin
     if ($tipo === "historico") {
-      $items = $cita->consultaCitas();
+      $items = $cita->consultaCitasH($filtro);
     } elseif ($tipo === "pendientes") {
-      $items = $cita->consultaCitas();
+      $items = $cita->consultaCitasP($filtro);
     }
   }
 }
@@ -40,70 +40,125 @@ $itemsPagina  = array_slice($items, $inicio, $itemsPorPagina);
 ?>
 
 <br>
-<div class="table-responsive">
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>codigo_cita</th>
-        <th>fecha_cita</th>
-        <th>Cita</th>
-        <th>Consultorio </th>
-        <th>Especialista</th>
-        <th>Estado</th>
-        <?php if ($tipo === "historico"): ?>
-          <th>Observavion</th>
-        <?php endif; ?>
-        <?php if ($tipo === "pendientes"): ?>
-          <th>Reagendar</th>
-          <th>Cancelar</th>
-
-        <?php endif; ?>
-
-      </tr>
-    </thead>
-    <tbody>
-      <?php foreach ($itemsPagina as $item): ?>
+<?php
+if ($_SESSION["role"] == 'M') {
+?>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
         <tr>
-          <td><?= $item->getCodigoCita() ?></td>
-          <td><?= $item->getFechaCita() ?></td>
-          <td><?= $item->getIdTipoCita()->getEspecializacion() ?></td>
-          <td><?= $item->getIdConsultorio()->getLugarCita() ?></td>
-          <td><?= $item->getIdMedico()->nombreCompleto() ?></td>
-          <td><?= $item->estadoHistorial ?></td>
-          <?php if ($tipo === "historico"): ?>
+          <th>codigo_cita</th>
+          <th>fecha_cita</th>
+          <th>Cita</th>
+          <th>Consultorio </th>
+          <th>Paciente</th>
+          <th>Estado</th>
+          <th>Observavion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($itemsPagina as $item): ?>
+          <tr>
+            <td><?= $item->getCodigoCita() ?></td>
+            <td><?= $item->getFechaCita() ?></td>
+            <td><?= $item->getIdTipoCita()->getEspecializacion() ?></td>
+            <td><?= $item->getIdConsultorio()->getLugarCita() ?></td>
+            <td><?= $item->getIdMedico()->nombreCompleto() ?></td>
+            <td><?= $item->estadoHistorial ?></td>
             <td><?= $item->motivoHistorial ?></td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  </div>
+<?php
+} else {
+?>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>codigo_cita</th>
+          <th>fecha_cita</th>
+          <th>Cita</th>
+          <th>Consultorio </th>
+          <th>Especialista</th>
+          <th>Estado</th>
+          <?php if ($tipo === "historico"): ?>
+            <th>Observavion</th>
           <?php endif; ?>
           <?php if ($tipo === "pendientes"): ?>
-            <!-- Botón Editar -->
-            <td>
-              <button
-                class="btn btn-success btn-editar-usuario"
-                data-bs-toggle="modal"
-                data-bs-target="#modalEditar"
-                data-id="<?= $item->getCodigoCita() ?>"
-                style="color: white;">
-                <span class='material-symbols-rounded'>edit</span>
-              </button>
-            </td>
-            <!-- Botón Eliminar -->
-            <td>
-              <button
-                class="btn btn-danger btn-eliminar-usuario"
-                data-bs-toggle="modal"
-                data-bs-target="#modalEliminar"
-                data-id="<?= $item->getCodigoCita() ?>"
-                style="color: white;">
-                <span class="material-symbols-rounded">delete</span>
-              </button>
-            </td>
+            <?php if ($_SESSION["role"] == 'A'): ?>
+              <th>Asistencia</th>
+            <?php endif; ?>
+
+            <th>Reagendar</th>
+            <th>Cancelar</th>
           <?php endif; ?>
 
         </tr>
-      <?php endforeach; ?>
-    </tbody>
-  </table>
-</div>
+      </thead>
+      <tbody>
+        <?php foreach ($itemsPagina as $item): ?>
+          <tr>
+            <td><?= $item->getCodigoCita() ?></td>
+            <td><?= $item->getFechaCita() ?></td>
+            <td><?= $item->getIdTipoCita()->getEspecializacion() ?></td>
+            <td><?= $item->getIdConsultorio()->getLugarCita() ?></td>
+            <td><?= $item->getIdMedico()->nombreCompleto() ?></td>
+            <td><?= $item->estadoHistorial ?></td>
+            <?php if ($tipo === "historico"): ?>
+              <td><?= $item->motivoHistorial ?></td>
+            <?php endif; ?>
+            <?php if ($tipo === "pendientes"): ?>
+              <?php if ($_SESSION["role"] == 'A'): ?>
 
+                <!-- Botón Aistencia -->
+                <td>
+                  <button
+                    class="btn btn-primary btn-editar-usuario"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalAsistencia"
+                    data-id="<?= $item->getCodigoCita() ?>"
+                    data-consultorio="<?= $item->getIdConsultorio()->getIdConsultorio() ?>"
+                    style="color: white;">
+                    <span class='material-symbols-rounded'>check</span>
+                  </button>
+                </td>
+              <?php endif; ?>
+
+              <!-- Botón Editar -->
+              <td>
+                <button
+                  class="btn btn-success btn-editar-usuario"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalEditar"
+                  data-id="<?= $item->getCodigoCita() ?>"
+                  style="color: white;">
+                  <span class='material-symbols-rounded'>edit</span>
+                </button>
+              </td>
+              <!-- Botón Eliminar -->
+              <td>
+                <button
+                  class="btn btn-danger btn-eliminar-usuario"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalEliminar"
+                  data-id="<?= $item->getCodigoCita() ?>"
+                  style="color: white;">
+                  <span class="material-symbols-rounded">delete</span>
+                </button>
+              </td>
+            <?php endif; ?>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  </div>
+<?php
+
+}
+?>
 
 <div id="data-component"></div>
 
@@ -134,6 +189,31 @@ $itemsPagina  = array_slice($items, $inicio, $itemsPorPagina);
   </ul>
 </nav>
 
+<div class="modal fade" id="modalAsistencia" tabindex="-1" aria-labelledby="asistenciaLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="procesarAsistencia">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="asistenciaLabel">Confirmar Asistencia</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que quieres Confirmar la asistencia a la cita?</p>
+          <!-- Campo oculto para el ID de la cita -->
+          <input type="hidden" name="id_cita" id="idCitaAsistida">
+
+          <!-- Campo oculto para el consultorio -->
+          <input type="hidden" name="consultorio" id="consultorioAsistido">
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Confirmar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
 <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="editarLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -194,6 +274,49 @@ $itemsPagina  = array_slice($items, $inicio, $itemsPorPagina);
 </div>
 
 <script>
+  $(document).ready(function() {
+    // Al abrir el modal, asignar el id_cita al input oculto
+    $('#modalAsistencia').on('show.bs.modal', function(event) {
+      var button = $(event.relatedTarget); // Botón que activó el modal
+
+      var idCita = button.data('id'); // data-id
+      var consultorio = button.data('consultorio'); // data-consultorio
+
+      // Asignar a los inputs ocultos
+      $('#idCitaAsistida').val(idCita);
+      $('#consultorioAsistido').val(consultorio); // <-- aquí agregas esto
+    });
+
+
+    // Manejo del formulario
+    $('#procesarAsistencia').on('submit', function(e) {
+      e.preventDefault();
+
+      const datosFormulario = $(this).serialize();
+
+      $.ajax({
+        url: 'ajax/asistenciaCita.php',
+        type: 'POST',
+        data: datosFormulario,
+        dataType: 'json',
+        success: function(respuesta) {
+          if (respuesta.success) {
+            alert("Confirmar Asistencia correctamente.");
+            $('#procesarAsistencia')[0].reset();
+            $('#modalAsistencia').modal('hide');
+            // Aquí puedes actualizar la tabla si quieres con JS
+          } else {
+            alert("Error: " + respuesta.error);
+          }
+        },
+        error: function(xhr) {
+          alert("Error al enviar la solicitud.");
+          console.log(xhr.responseText);
+        }
+      });
+    });
+  });
+
   $(document).ready(function() {
     // Al abrir el modal, asignar el id_cita al input oculto
     $('#modalEliminar').on('show.bs.modal', function(event) {
