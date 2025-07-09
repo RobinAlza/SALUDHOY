@@ -1,13 +1,17 @@
 <?php
 
 if ($_SESSION["role"] == "M") {
+
     $persona = new Medico($_SESSION["id"]);
     $persona->consultar();
     echo $persona->getIdMedico();
+
 } else {
     header("Location: ?pid=" . base64_encode("views/sinPermisos.php"));
     exit();
 }
+
+
 
 ?>
 

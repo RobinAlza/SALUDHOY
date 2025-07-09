@@ -34,7 +34,7 @@ class HorarioDisponibleDAO
                 WHERE id_medico=$id_medico AND fecha_cita BETWEEN '$fecha 00:00:00' AND '$fecha 23:59:59'";
     }
     public function franjaHorariaEspecifica($fecha, $hora, $id_medico){
-        return "SELECT hora, estado
+        return "SELECT fecha_horario, id_medico
                 FROM horario_disponible
                 WHERE id_medico=$id_medico AND fecha_horario = '$fecha $hora'";
     }

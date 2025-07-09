@@ -124,29 +124,64 @@ class HorarioDisponible
         return $lista;
     }
     
-    public function guardarFranjaHoraria($horas, $fecha, $id_medico) {
+   public function insertarFranja($conexion, $dao, $fecha, $hora, $id_medico) {
+        $conexion->ejecutarConsulta($dao->insertar($fecha, $hora, $id_medico));
+    }
+
+    public function eliminarFranja($conexion, $dao, $fecha, $hora, $id_medico) {
+        $conexion->ejecutarConsulta($dao->eliminar($fecha, $hora, $id_medico));
+    }
+
+    public function guardarFranjaHoraria($horasSeleccionadas, $fecha, $id_medico) {
         $conexion = new Conexion();
         $conexion->abrirConexion();
         $dao = new HorarioDisponibleDAO();
 
-        foreach ($horas as $hora) {
-            $hora_inicio = $hora['hora'];
-            $estado = $hora['estado'];
+        
+        $franjasDisponibles = $conexion->ejecutarConsulta($dao->consultarPorFecha($fecha, $id_medico));
 
-            if ($estado == 1) {
-                // Si es habilitado (o modificado a habilitado), INSERT o UPDATE
-                $conexion->ejecutarConsulta($dao->insertar($fecha, $hora_inicio, $id_medico));
-            } else {
-                // Si está deshabilitado, verificar primero si existía en la base de datos
-                $existe = $conexion->ejecutarConsulta($dao->franjaHorariaEspecifica($fecha, $hora_inicio, $id_medico));
-
-                if (!empty($existe)) {
-                    // Si existe, eliminarla
-                    $conexion->ejecutarConsulta($dao->eliminar($fecha, $hora_inicio, $id_medico));
-                }
-                // Si no existe, no hace nada
+        
+        $horasHabilitadas = []; // Solo las marcadas como estado=1
+        foreach ($horasSeleccionadas as $hora) {
+            if ($hora['estado'] == 1) {
+                $horasHabilitadas[] = $hora['hora'];
             }
+        }
 
+        $horasBDArray = [];
+        if (!empty($franjasDisponibles)) {
+            foreach ($franjasDisponibles as $franja) {
+                $hora_bd = date('H:i:s', strtotime($franja['fecha_horario']));
+                $horasBDArray[] = $hora_bd;
+            }
+        }
+
+        
+        foreach ($horasHabilitadas as $hora) {
+            if (!in_array($hora, $horasBDArray)) {
+                $this->insertarFranja($conexion, $dao, $fecha, $hora, $id_medico);
+            }
+        }
+
+        
+        foreach ($horasBDArray as $hora_bd) {
+            if (!in_array($hora_bd, $horasHabilitadas)) {
+                $this->eliminarFranja($conexion, $dao, $fecha, $hora_bd, $id_medico);
+            }
+        }
+
+        
+        $citasMedicas = $conexion->ejecutarConsulta($dao->consultarYa($fecha, $id_medico));
+
+        if (!empty($citasMedicas)) {
+            foreach ($citasMedicas as $cita) {
+                $hora_cita = date('H:i:s', strtotime($cita['fecha_cita']));
+
+                // Si no existe la franja horaria correspondiente, la inserta
+                if (!in_array($hora_cita, $horasBDArray) && !in_array($hora_cita, $horasHabilitadas)) {
+                    $this->insertarFranja($conexion, $dao, $fecha, $hora_cita, $id_medico);
+                }
+            }
         }
 
         $conexion->cerrarConexion();

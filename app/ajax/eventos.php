@@ -76,6 +76,23 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
                         data-bs-target='#detalleModal'>
                         <span class='material-symbols-rounded'>visibility</span>
                     </button>
+                     <!-- Botón Editar -->
+                    <button
+                      class='btn btn-success btn-editar-usuario'
+                      data-bs-toggle='modal'
+                      data-bs-target='#modalEditar'
+                      data-id='{$fila['codigo_cita']}'
+                      style='color: white;'> 
+                      <span class='material-symbols-rounded'>edit</span>
+                    </button>
+                    <button
+                      class='btn btn-danger btn-eliminar-usuario'
+                      data-bs-toggle='modal'
+                      data-bs-target='#modalEliminar'
+                      data-id='{$fila['codigo_cita']}'
+                      style='color: white;'>
+                      <span class='material-symbols-rounded'>delete</span>
+                    </button>
                 </td>
             </tr>";
 
@@ -88,7 +105,10 @@ if (isset($_GET['year'], $_GET['month'], $_GET['day']) &&
 } else {
     echo "<div class='alert alert-warning'>Faltan datos o permisos para mostrar las citas.</div>";
 }
-echo "<div class='modal fade' id='detalleModal' tabindex='-1' aria-labelledby='detalleModalLabel' aria-hidden='true'>
+
+?>
+
+<div class='modal fade' id='detalleModal' tabindex='-1' aria-labelledby='detalleModalLabel' aria-hidden='true'>
   <div class='modal-dialog modal-lg'>
     <div class='modal-content'>
       <div class='modal-header'>
@@ -105,8 +125,65 @@ echo "<div class='modal fade' id='detalleModal' tabindex='-1' aria-labelledby='d
     </div>
   </div>
 </div>
-"
-?>
+
+<div class='modal fade' id='modalEditar' tabindex='-1' aria-labelledby='editarLabel' aria-hidden='true'>
+  <div class='modal-dialog'>
+    <form id='procesarReagendamiento'>
+      <div class='modal-content'>
+        <div class='modal-header'>
+          <h5 class='modal-title' id='editarLabel'>Reagendar Cita</h5>
+          <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Cerrar'></button>
+        </div>
+        <div class='modal-body'>
+
+          <!-- Campo oculto para el ID de la cita -->
+          <input type='hidden' name='id_cita' id='idCitaEditar'>
+          <div class='mb-3'>
+            <label for='fecha_cita' class='form-label'> * Fecha Cita</label>
+            <input type='date' class='form-control' name='fecha_cita' required>
+          </div>
+          <div class='mb-3'>
+            <label for='hora_cita' class='form-label'>* Hora de Cita</label>
+            <input type='time' class='form-control' name='hora_cita' id='hora_cita' required>
+          </div>
+
+        </div>
+        <div class='modal-footer'>
+          <button type='submit' class='btn btn-success'>Guardar cambios</button>
+          <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancelar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class='modal fade' id='modalEliminar' tabindex='-1' aria-labelledby='eliminarLabel' aria-hidden='true'>
+  <div class='modal-dialog'>
+    <form id='procesarEliminacion'>
+      <div class='modal-content'>
+        <div class='modal-header bg-danger text-white'>
+          <h5 class='modal-title' id='eliminarLabel'>Confirmar Cancelacion</h5>
+          <button type='button' class='btn-close btn-close-white' data-bs-dismiss='modal' aria-label='Cerrar'></button>
+        </div>
+        <div class='modal-body'>
+          <p>¿Estás seguro de que deseas cancelar esta cita?</p>
+
+          <!-- Campo oculto para el ID de la cita -->
+          <input type='hidden' name='id_cita' id='idCitaEliminar'>
+          <!-- Campo textarea para el motivo -->
+          <label for='motivo_cancelacion' class='form-label mt-2'>Motivo de la cancelación</label>
+          <textarea name='motivo_cancelacion' class='form-control' rows='4' placeholder='Escribe el motivo de la cancelación...' required></textarea>
+        </div>
+
+        <div class='modal-footer'>
+          <button type='submit' class='btn btn-danger'>Cancelar</button>
+          <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cerrar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
   //  detalles en el modal
   $(document).on('click', '.ver-detalle-btn', function() {

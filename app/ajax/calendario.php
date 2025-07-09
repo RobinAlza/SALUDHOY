@@ -75,10 +75,7 @@ echo "<div class='text-center mt-3'>Botón: $btn</div>";
         <!-- Aquí se cargará detalles.php vía AJAX -->
         <p>Cargando detalles...</p>
       </div>
-      <div class='modal-footer'>
-        <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cerrar</button>
-        <button class="btn btn-primary" id="guardarHorarios" >Guardar</button>
-      </div>
+
     </div>
   </div>
 </div>
